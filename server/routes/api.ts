@@ -17,11 +17,12 @@ router.post('rooms/:roomId/users', (_req, _res) => {
 
 });
 
-router.delete('rooms/:roomID/users', (_req, _res) => {
+router.put('rooms/:roomID/users', (_req, _res) => {
 
 });
 
+router.delete('rooms/:roomID/users', (_req, _res) => {
 
-// Additional routes can go here if your application has more pages or needs to handle HTTP API endpoints
+});
 
 export default router;
