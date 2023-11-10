@@ -1,28 +1,16 @@
 import express from 'express';
+import * as roomsController from '../controllers/roomsController';
+import * as usersController from '../controllers/usersController';
+
 const router = express.Router();
 
-router.get('/rooms', (_req, _res) => {
-  
-});
+router.get('/rooms/:roomID', roomsController.getRoom);
+router.post('/rooms', roomsController.createRoom);
+router.put('/rooms/:roomID', roomsController.updateRoom);
+router.delete('/rooms/:roomID', roomsController.deleteRoom); 
 
-router.post('/rooms', (_req, _res) => {
-
-});
-
-router.put('/rooms', (_req, _res) => {
-
-});
-
-router.post('rooms/:roomId/users', (_req, _res) => {
-
-});
-
-router.put('rooms/:roomID/users', (_req, _res) => {
-
-});
-
-router.delete('rooms/:roomID/users', (_req, _res) => {
-
-});
+router.get('/rooms/:roomID/users', usersController.getUsersForRoom);
+router.post('/rooms/:roomID/users', usersController.joinRoom);
+router.put('/rooms/:roomID/users', usersController.updateUser);
 
 export default router;

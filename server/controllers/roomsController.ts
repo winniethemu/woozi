@@ -1,97 +1,64 @@
+import { Request, Response } from 'express';
+// import { v4 as uuidv4 } from 'uuid';  // For generating unique room IDs
 
-// gameController.js
-const socketHelper = require('./utils/socket');
+// import Room from '../models/Room';
 
-const players = new Map(); // Store player info, keyed by socket ID
-const games = new Map(); // Store game state info, keyed by room ID
+export const createRoom = async (req: Request, res: Response): Promise<void> => {
+  try {
+      // Generate a unique ID for the new room
+      // const newRoomId = uuidv4();
 
-// Function to handle a new player joining a game
-function playerJoined(socket, playerInfo) {
-  // Add the player to our players map
-  players.set(socket.id, playerInfo);
-  socketHelper.joinRoom(socket, playerInfo.roomID);
+      // Create a new room object (replace with your actual database model or logic)
+      // const newRoom = new Room({
+      //     id: newRoomId,
+      //     name: req.body.name, // Assuming the request body contains a 'name' for the room
+      //     ... // other room properties
+      // });
 
-  // Initialize game state if it doesn't exist
-  if (!games.has(playerInfo.roomID)) {
-    games.set(playerInfo.roomID, {
-      players: [],
-      state: 'waiting', // waiting, night, day, voting, ended
-      roles: [],
-      actions: []
-    });
+      // Save the new room (this is a placeholder, replace with actual database save logic)
+      // await newRoom.save();
+
+      // Send back the details of the new room
+      res.status(201).json({
+          message: 'Room created successfully',
+          // roomId: newRoomId,
+          // ... other details you want to send back
+      });
+  } catch (error: unknown) {
+    // Perform type checking
+    if (error instanceof Error) {
+        // Now 'error' is narrowed down to the 'Error' type
+        res.status(500).json({ message: error.message });
+    } else {
+        // Handle cases where the caught error is not an instance of Error
+        res.status(500).json({ message: 'An unknown error occurred' });
+    }
   }
+};
 
-  // Add player to the game
-  const game = games.get(playerInfo.roomID);
-  game.players.push({
-    socketId: socket.id,
-    name: playerInfo.name,
-    role: null, // Role will be assigned when the game starts
-    alive: true
-  });
+export const updateRoom = (req: Request, res: Response): void => {
+  // Logic to create a new game room
+  res.status(201).send('Room updated');
+};
 
-  // Notify others in the room that a new player has joined
-  socketHelper.broadcastToRoom(socket, playerInfo.roomID, 'playerJoined', { name: playerInfo.name });
-}
+export const getRoom = async (req: Request, res: Response): Promise<void> => {
+  const roomId = req.params.roomId;
 
-// Function to start the game
-function startGame(roomID) {
-  const game = games.get(roomID);
-  game.state = 'night';
-  assignRoles(roomID);
+  // try {
+  //     // Replace with actual logic to retrieve room details, e.g. from a database
+  //     const roomDetails = await someService.getRoomById(roomId);
 
-  // Notify players in the room that the game has started
-  socketHelper.emitToRoom(roomID, 'gameStarted', { roles: game.roles });
-  // More logic here for starting the night phase...
-}
+  //     if (roomDetails) {
+  //         res.status(200).json(roomDetails);
+  //     } else {
+  //         res.status(404).send('Room not found');
+  //     }
+  // } catch (error) {
+  //     // Handle error, possibly a 500 internal server error
+  //     res.status(500).send(error.message);
+  // }
+};
 
-// Function to assign roles to players randomly
-function assignRoles(roomID) {
-  // Example of assigning roles, this would be more complex in a real game
-  const game = games.get(roomID);
-  const availableRoles = ['werewolf', 'seer', 'villager']; // This should be dynamic based on the game settings
-  game.players.forEach(player => {
-    player.role = availableRoles[Math.floor(Math.random() * availableRoles.length)];
-    game.roles.push(player.role);
-  });
-}
-
-// Function to handle a player's action during the night
-function playerAction(socket, action) {
-  // Example of handling a player action, this would depend on the role
-  const player = players.get(socket.id);
-  const game = games.get(player.roomID);
-  if (game.state !== 'night') return;
-
-  // Record the action
-  game.actions.push({
-    socketId: socket.id,
-    action: action
-  });
-
-  // Check if all actions are done to move to the day phase
-  // ...
-
-  // Notify the player that their action was recorded
-  socket.emit('actionReceived');
-}
-
-// Function to end the night phase and start the day phase
-function endNight(roomID) {
-  const game = games.get(roomID);
-  game.state = 'day';
-  // Handle the outcome of the night, e.g., apply werewolf attacks
-  // ...
-
-  // Notify players to start the day phase
-  socketHelper.emitToRoom(roomID, 'startDay');
-  // More logic for day phase...
-}
-
-// Export the functions to be used by the Socket.io event handlers
-module.exports = {
-  playerJoined,
-  startGame,
-  playerAction,
-  endNight
+export const deleteRoom = (req: Request, res: Response): void => {
+  res.status(201).send('Room deleted');
 };
