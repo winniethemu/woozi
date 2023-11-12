@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import Room from '../models/room';
+import Room from '../models/Room';
 
 export const getUsersForRoom = (req: Request, res: Response): void => {};
 
