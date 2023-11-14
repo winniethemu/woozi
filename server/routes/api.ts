@@ -12,5 +12,6 @@ router.delete('/rooms/:roomID', roomsController.deleteRoom);
 router.get('/rooms/:roomID/users', usersController.getUsersForRoom);
 router.post('/rooms/:roomID/users', usersController.joinRoom);
 router.put('/rooms/:roomID/users', usersController.updateUser);
+router.post('/users', usersController.createUser);
 
 export default router;
