@@ -1,38 +1,22 @@
 import { Request, Response } from 'express';
+import generateUniqueRoomCode from '../utils/roomCodeGenerator';
+import Room from '../models/room';
 // import { v4 as uuidv4 } from 'uuid';  // For generating unique room IDs
 
 // import Room from '../models/Room';
 
 export const createRoom = async (req: Request, res: Response): Promise<void> => {
   try {
-      // Generate a unique ID for the new room
-      // const newRoomId = uuidv4();
+    let roomCode = generateUniqueRoomCode();
+    const newRoom = new Room({
+        // ... other room properties
+        code: roomCode,
+    });
 
-      // Create a new room object (replace with your actual database model or logic)
-      // const newRoom = new Room({
-      //     id: newRoomId,
-      //     name: req.body.name, // Assuming the request body contains a 'name' for the room
-      //     ... // other room properties
-      // });
-
-      // Save the new room (this is a placeholder, replace with actual database save logic)
-      // await newRoom.save();
-
-      // Send back the details of the new room
-      res.status(201).json({
-          message: 'Room created successfully',
-          // roomId: newRoomId,
-          // ... other details you want to send back
-      });
-  } catch (error: unknown) {
-    // Perform type checking
-    if (error instanceof Error) {
-        // Now 'error' is narrowed down to the 'Error' type
-        res.status(500).json({ message: error.message });
-    } else {
-        // Handle cases where the caught error is not an instance of Error
-        res.status(500).json({ message: 'An unknown error occurred' });
-    }
+    await newRoom.save();
+    res.status(201).json({ message: 'Room created successfully', room: newRoom });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
   }
 };
 

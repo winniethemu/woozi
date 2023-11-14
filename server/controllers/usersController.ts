@@ -4,21 +4,20 @@ import Room from '../models/room';
 export const getUsersForRoom = (req: Request, res: Response): void => {};
 
 export const joinRoom = async (req: Request, res: Response): Promise<void> => {
-  const roomId = req.params.roomId;
+  const roomCode = req.params.roomID;
   const userIds = req.body.userIds; // Assuming userIds are sent in the request body
 
   try {
-    const room = await Room.findById(roomId);
-    if (!room) {
+    const update = { $addToSet: { users: userIds } }; // Use $addToSet to avoid adding duplicate userIds
+    const options = { new: true }; // Return the updated document
+
+    const updatedRoom = await Room.findOneAndUpdate({code: roomCode});
+    if (!updatedRoom) {
       res.status(404).send('Room not found');
       return;
     }
-
-    // Add user IDs to the room's users array
-    room.users.push(...userIds);
-    await room.save();
-
-    res.status(200).json({ message: 'Users added to the room', room });
+    
+    res.status(200).json({ message: 'User added to the room', room: updatedRoom });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
