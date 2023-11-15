@@ -38,8 +38,8 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
     // Create a token
     const token = jwt.sign(
       { userId: newUser._id },
-      'your_jwt_secret',  // Replace with your actual secret key
-      { expiresIn: '24h' } // Token expiration
+      process.env.JWT_SECRET as string,
+      { expiresIn: '365days' } // Token expiration
     );
 
     res.status(201).json({ message: 'User created', token });

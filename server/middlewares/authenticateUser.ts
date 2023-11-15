@@ -9,7 +9,7 @@ export const authenticateUser = (req: Request, res: Response, next: NextFunction
       return;
     }
 
-    const verified = jwt.verify(token, 'your_jwt_secret');
+    const verified = jwt.verify(token, process.env.JWT_SECRET as string);
     req.user = verified as { userId: string }; // Type assertion
     next(); 
   } catch (error) {
