@@ -3,8 +3,7 @@ import Room from '../models/room';
 import User from '../models/user';
 import jwt from 'jsonwebtoken';
 
-
-export const getUsersForRoom = (req: Request, res: Response): void => { };
+export const getUsersForRoom = (req: Request, res: Response): void => {};
 
 export const joinRoom = async (req: Request, res: Response): Promise<void> => {
   const roomCode = req.params.roomID;
@@ -20,32 +19,25 @@ export const joinRoom = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    res.status(200).json({ message: 'User added to the room', room: updatedRoom });
+    res
+      .status(200)
+      .json({ message: 'User added to the room', room: updatedRoom });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 };
 
-export const createUser = async (req: Request, res: Response): Promise<void> => {
-  try {
-    // Create new user
-    const newUser = new User({
-      name: req.body.userName
-    });
+export const createUser = async (): Promise<string> => {
+  const user = new User();
+  await user.save();
 
-    await newUser.save();
+  const token = jwt.sign(
+    { userId: user._id },
+    process.env.JWT_SECRET as string,
+    { expiresIn: '365days' }
+  );
 
-    // Create a token
-    const token = jwt.sign(
-      { userId: newUser._id },
-      process.env.JWT_SECRET as string,
-      { expiresIn: '365days' } // Token expiration
-    );
-
-    res.status(201).json({ message: 'User created', token });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
-  }
+  return token;
 };
 
 export const updateUser = (req: Request, res: Response): void => {

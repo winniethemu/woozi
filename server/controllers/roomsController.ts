@@ -1,26 +1,19 @@
 import { Request, Response } from 'express';
+
 import generateUniqueRoomCode from '../utils/roomCodeGenerator';
-import Room from '../models/room';
+import Room, { IRoom } from '../models/room';
+import { createUser } from './usersController';
 // import { v4 as uuidv4 } from 'uuid';  // For generating unique room IDs
 
-export const createRoom = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    let roomCode = generateUniqueRoomCode();
-    const newRoom = new Room({
-      // ... other room properties
-      code: roomCode,
-    });
-
-    await newRoom.save();
-    res
-      .status(201)
-      .json({ message: 'Room created successfully', room: newRoom });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
-  }
+export const createRoom = async (): Promise<{
+  code: string;
+  token: string;
+}> => {
+  const code = await generateUniqueRoomCode();
+  const room = new Room({ code });
+  await room.save();
+  const token = await createUser();
+  return { code, token };
 };
 
 export const updateRoom = (req: Request, res: Response): void => {

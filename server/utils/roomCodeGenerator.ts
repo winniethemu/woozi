@@ -1,4 +1,4 @@
-import Room from "../models/room";
+import Room from '../models/room';
 
 function generateRoomCode(length = 4) {
   // Skip char 'O' as it may confuse the user
@@ -12,7 +12,7 @@ function generateRoomCode(length = 4) {
 }
 
 async function generateUniqueRoomCode() {
-  let roomCode;
+  let roomCode = '';
   let isUnique = false;
 
   while (!isUnique) {
@@ -26,6 +26,5 @@ async function generateUniqueRoomCode() {
 
   return roomCode;
 }
-
 
 export default generateUniqueRoomCode;
