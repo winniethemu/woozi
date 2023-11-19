@@ -3,18 +3,21 @@ import generateUniqueRoomCode from '../utils/roomCodeGenerator';
 import Room from '../models/room';
 // import { v4 as uuidv4 } from 'uuid';  // For generating unique room IDs
 
-// import Room from '../models/Room';
-
-export const createRoom = async (req: Request, res: Response): Promise<void> => {
+export const createRoom = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     let roomCode = generateUniqueRoomCode();
     const newRoom = new Room({
-        // ... other room properties
-        code: roomCode,
+      // ... other room properties
+      code: roomCode,
     });
 
     await newRoom.save();
-    res.status(201).json({ message: 'Room created successfully', room: newRoom });
+    res
+      .status(201)
+      .json({ message: 'Room created successfully', room: newRoom });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }

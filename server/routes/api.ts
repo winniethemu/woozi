@@ -8,11 +8,19 @@ const router = express.Router();
 router.get('/rooms/:roomID', roomsController.getRoom);
 router.post('/rooms', roomsController.createRoom);
 router.put('/rooms/:roomID', roomsController.updateRoom);
-router.delete('/rooms/:roomID', roomsController.deleteRoom); 
+router.delete('/rooms/:roomID', roomsController.deleteRoom);
 
-router.get('/rooms/:roomID/users', authenticateUser, usersController.getUsersForRoom);
+router.get(
+  '/rooms/:roomID/users',
+  authenticateUser,
+  usersController.getUsersForRoom
+);
 router.post('/rooms/:roomID/users', authenticateUser, usersController.joinRoom);
-router.put('/rooms/:roomID/users', authenticateUser, usersController.updateUser);
+router.put(
+  '/rooms/:roomID/users',
+  authenticateUser,
+  usersController.updateUser
+);
 router.post('/users', usersController.createUser);
 
 export default router;
