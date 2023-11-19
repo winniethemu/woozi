@@ -16,6 +16,19 @@ export const createRoom = async (): Promise<{
   return { code, token };
 };
 
+export const joinRoom = async (
+  code: string,
+  userId: string
+): Promise<IRoom | null> => {
+  // Use $addToSet to avoid adding duplicates
+  const update = { $addToSet: { users: userId } };
+  // Use {new: true} to return the updated document
+  const room = await Room.findOneAndUpdate({ code }, update, {
+    new: true,
+  });
+  return room;
+};
+
 export const updateRoom = (req: Request, res: Response): void => {
   // Logic to create a new game room
   res.status(201).send('Room updated');
