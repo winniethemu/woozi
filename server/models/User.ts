@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 // Interface to describe a Room
-interface IUser extends Document {
+export interface IUser extends Document {
   name: string;
   // Add other properties here
   // e.g., description: string;

@@ -1,4 +1,4 @@
-import express, { Express, Request, Response } from 'express';
+import express, { Express } from 'express';
 const app: Express = express();
 
 import dotenv from 'dotenv';
@@ -15,19 +15,12 @@ const io = new Server(server, {
 });
 
 import indexRouter from './routes/api';
+import socketHandler from './middlewares/socket';
 
 const port = process.env.PORT;
 
-// Use the routes defined in routes/index.js
 app.use('/', indexRouter);
-
-io.on('connection', (socket) => {
-  console.log('user connected');
-
-  socket.on('disconnect', () => {
-    console.log('user disconnected');
-  });
-});
+io.use(socketHandler);
 
 server.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);

@@ -1,21 +1,21 @@
 import { Request, Response } from 'express';
 import Room from '../models/room';
-import User from '../models/user';
+import User, { IUser } from '../models/user';
 import jwt from 'jsonwebtoken';
 
 export const getUsersForRoom = (req: Request, res: Response): void => {};
 
-export const createUser = async (): Promise<string> => {
+export const createUser = async (): Promise<{ user: IUser; token: string }> => {
   const user = new User();
   await user.save();
 
   const token = jwt.sign(
     { userId: user._id },
     process.env.JWT_SECRET as string,
-    { expiresIn: '365days' }
+    { expiresIn: '365 days' }
   );
 
-  return token;
+  return { user, token };
 };
 
 export const updateUser = (req: Request, res: Response): void => {

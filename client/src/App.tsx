@@ -1,39 +1,47 @@
-import { useEffect, useState } from 'react';
+import React from 'react';
 import { io } from 'socket.io-client';
 
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
+import { SocketMessage } from '../../types';
 import './App.css';
 
-function App() {
-  const [count, setCount] = useState(0);
+const socket = io('http://localhost:8000', { autoConnect: false });
 
-  useEffect(() => {
-    const socket = io('http://localhost:8000');
+function App() {
+  const [inGame, setInGame] = React.useState(false);
+
+  React.useEffect(() => {
+    socket.on('connect_error', (err) => {
+      if (err.message === SocketMessage.INVALID_USER) {
+        console.log('invalid user');
+      }
+    });
+
+    socket.onAny((event, ...args) => {
+      console.log(event, args);
+    });
   }, []);
+
+  function handleJoinRoom(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    console.log(data.get('code'));
+  }
+
+  function handleCreateRoom() {
+    // handle create room
+  }
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      {inGame ? (
+        <p>We are in!</p>
+      ) : (
+        <form onSubmit={handleJoinRoom}>
+          <input name="code" type="text"></input>
+          <button type="submit">Join</button>
+          <button onClick={handleCreateRoom}>Create</button>
+        </form>
+      )}
     </>
   );
 }

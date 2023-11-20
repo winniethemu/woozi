@@ -12,14 +12,18 @@ export const createRoom = async (): Promise<{
   const code = await generateUniqueRoomCode();
   const room = new Room({ code });
   await room.save();
-  const token = await createUser();
+  const { token } = await createUser();
   return { code, token };
 };
 
 export const joinRoom = async (
   code: string,
-  userId: string
+  userId?: string
 ): Promise<IRoom | null> => {
+  if (!userId) {
+    const { token, user } = await createUser();
+    userId = user._id;
+  }
   // Use $addToSet to avoid adding duplicates
   const update = { $addToSet: { users: userId } };
   // Use {new: true} to return the updated document
