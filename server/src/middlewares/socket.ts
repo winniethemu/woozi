@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 
-import { SocketMessage } from '../../types';
+import { SocketMessage } from '../types';
 
 export default function socketHandler(
   socket: Socket,
@@ -10,6 +10,6 @@ export default function socketHandler(
   if (!userId) {
     return next(new Error(SocketMessage.INVALID_USER));
   }
-  socket.userId = userId;
+  // socket.userId = userId;
   next();
 }

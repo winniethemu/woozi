@@ -1,4 +1,6 @@
 import express, { Request, Response } from 'express';
+
+import user from '../middlewares/user';
 import {
   createRoom,
   joinRoom,
@@ -7,16 +9,15 @@ import {
   deleteRoom,
 } from '../controllers/roomsController';
 import { getUsersForRoom, updateUser } from '../controllers/usersController';
-import { authenticateUser } from '../middlewares/authenticateUser';
 
 const router = express.Router();
 
 router.get('/rooms/:roomID', getRoom);
 
-router.post('/rooms', async (req: Request, res: Response) => {
+router.post('/rooms', user, async (req: Request, res: Response) => {
   try {
-    const result = await createRoom();
-    res.status(200).json(result);
+    const code = await createRoom(req.user);
+    res.status(200).json({ code, userId: req.user._id });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
@@ -41,8 +42,8 @@ router.get('/rooms/:roomID/join', async (req: Request, res: Response) => {
   }
 });
 
-router.get('/rooms/:roomID/users', authenticateUser, getUsersForRoom);
+// router.get('/rooms/:roomID/users', authenticateUser, getUsersForRoom);
 
-router.put('/rooms/:roomID/users', authenticateUser, updateUser);
+// router.put('/rooms/:roomID/users', authenticateUser, updateUser);
 
 export default router;

@@ -1,19 +1,15 @@
 import { Request, Response } from 'express';
 
-import generateUniqueRoomCode from '../utils/roomCodeGenerator';
 import Room, { IRoom } from '../models/room';
+import generateUniqueRoomCode from '../utils/roomCodeGenerator';
+import { IUser } from '../models/user';
 import { createUser } from './usersController';
-// import { v4 as uuidv4 } from 'uuid';  // For generating unique room IDs
 
-export const createRoom = async (): Promise<{
-  code: string;
-  token: string;
-}> => {
+export const createRoom = async (host: IUser): Promise<string> => {
   const code = await generateUniqueRoomCode();
-  const room = new Room({ code });
+  const room = new Room({ code, users: [host._id] });
   await room.save();
-  const { token } = await createUser();
-  return { code, token };
+  return code;
 };
 
 export const joinRoom = async (
@@ -21,7 +17,7 @@ export const joinRoom = async (
   userId?: string
 ): Promise<IRoom | null> => {
   if (!userId) {
-    const { token, user } = await createUser();
+    const user = await createUser();
     userId = user._id;
   }
   // Use $addToSet to avoid adding duplicates
