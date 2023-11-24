@@ -9,15 +9,18 @@ import {
   deleteRoom,
 } from '../controllers/roomsController';
 import { getUsersForRoom, updateUser } from '../controllers/usersController';
+import { SessionRequest } from '../types';
+import { IUser } from '../models/user';
 
 const router = express.Router();
 
 router.get('/rooms/:roomID', getRoom);
 
-router.post('/rooms', user, async (req: Request, res: Response) => {
+router.post('/rooms', user, async (req: SessionRequest, res: Response) => {
+  const user = req.user as IUser;
   try {
-    const code = await createRoom(req.user);
-    res.status(200).json({ code, userId: req.user._id });
+    const code = await createRoom(user);
+    res.status(200).json({ code, userId: user._id });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
