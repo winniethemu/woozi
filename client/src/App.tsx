@@ -1,10 +1,11 @@
 import React from 'react';
 import { io } from 'socket.io-client';
 
-import { SocketMessage } from '../../types';
 import './App.css';
+import { SERVER_BASE_URL } from './const';
+import { SocketMessage } from './types';
 
-const socket = io('http://localhost:8000', { autoConnect: false });
+const socket = io(SERVER_BASE_URL, { autoConnect: false });
 
 function App() {
   const [inGame, setInGame] = React.useState(false);
@@ -19,6 +20,10 @@ function App() {
     socket.onAny((event, ...args) => {
       console.log(event, args);
     });
+
+    return () => {
+      socket.off('connect_error');
+    };
   }, []);
 
   function handleJoinRoom(e: React.FormEvent<HTMLFormElement>) {
@@ -28,7 +33,14 @@ function App() {
   }
 
   function handleCreateRoom() {
-    // handle create room
+    fetch(`${SERVER_BASE_URL}/api/rooms`, {
+      method: 'POST',
+      mode: 'cors',
+    })
+      .then((res) => res.json())
+      .then((json) => {
+        console.log(json);
+      });
   }
 
   return (
