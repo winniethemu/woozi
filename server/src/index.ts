@@ -6,31 +6,36 @@ import mongoose from 'mongoose';
 import { Server } from 'socket.io';
 
 import apiRouter from './routes/api';
-import { connectionHandler, userHandler } from './socket';
+import { handleConnect, authHandler } from './socket';
 import { CLIENT_BASE_URL, corsOptions } from './const';
 
+// Read env variables from .env
 dotenv.config();
 
 const app: Express = express();
 const server = http.createServer(app);
 const port = process.env.PORT;
 
+// Set up DB
 async function db() {
   await mongoose.connect(process.env.DB_URL || '');
 }
 db().catch((err) => console.log(err));
 
+// HTTP API server
 app.use(cors(corsOptions));
 app.use('/api', apiRouter);
 
+// Websocket server
 const io = new Server(server, {
   cors: {
     origin: CLIENT_BASE_URL,
   },
 });
-io.use(userHandler);
-io.on('connection', connectionHandler);
+io.use(authHandler);
+io.on('connection', handleConnect);
 
+// Start up
 server.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
 });

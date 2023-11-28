@@ -33,9 +33,10 @@ function App() {
     fetch(`${SERVER_BASE_URL}/api/rooms/${code.toUpperCase()}/join`)
       .then((res) => res.json())
       .then((json) => {
-        const { userId } = json;
+        const { room, userId } = json;
+        sessionStorage.setItem('code', room.code);
         sessionStorage.setItem('userId', userId);
-        socket.auth = { userId };
+        socket.auth = { code: room.code, userId };
         socket.connect();
       });
   }
@@ -46,10 +47,10 @@ function App() {
     })
       .then((res) => res.json())
       .then((json) => {
-        const { userId, code } = json;
-        console.log(code);
+        const { code, userId } = json;
+        sessionStorage.setItem('code', code);
         sessionStorage.setItem('userId', userId);
-        socket.auth = { userId };
+        socket.auth = { code, userId };
         socket.connect();
       });
   }

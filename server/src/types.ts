@@ -12,5 +12,6 @@ export interface SessionRequest extends Request {
 }
 
 export interface SessionSocket extends Socket {
+  code?: string;
   userId?: string;
 }
