@@ -29,7 +29,15 @@ function App() {
   function handleJoinRoom(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
-    console.log(data.get('code'));
+    const code = data.get('code')?.toString() ?? '';
+    fetch(`${SERVER_BASE_URL}/api/rooms/${code.toUpperCase()}/join`)
+      .then((res) => res.json())
+      .then((json) => {
+        const { userId } = json;
+        sessionStorage.setItem('userId', userId);
+        socket.auth = { userId };
+        socket.connect();
+      });
   }
 
   function handleCreateRoom() {
@@ -38,7 +46,11 @@ function App() {
     })
       .then((res) => res.json())
       .then((json) => {
-        console.log(json);
+        const { userId, code } = json;
+        console.log(code);
+        sessionStorage.setItem('userId', userId);
+        socket.auth = { userId };
+        socket.connect();
       });
   }
 
@@ -47,11 +59,13 @@ function App() {
       {inGame ? (
         <p>We are in!</p>
       ) : (
-        <form onSubmit={handleJoinRoom}>
-          <input name="code" type="text"></input>
-          <button type="submit">Join</button>
+        <>
+          <form onSubmit={handleJoinRoom}>
+            <input name="code" type="text"></input>
+            <button type="submit">Join</button>
+          </form>
           <button onClick={handleCreateRoom}>Create</button>
-        </form>
+        </>
       )}
     </>
   );

@@ -30,20 +30,24 @@ router.put('/rooms/:roomID', updateRoom);
 
 router.delete('/rooms/:roomID', deleteRoom);
 
-router.get('/rooms/:roomID/join', async (req: Request, res: Response) => {
-  const code = req.params.roomID;
-  const userId = req.body.userId;
-  try {
-    const room = await joinRoom(code, userId);
-    if (room) {
-      res.status(200).json(room);
-    } else {
-      res.send(404);
+router.get(
+  '/rooms/:roomID/join',
+  user,
+  async (req: SessionRequest, res: Response) => {
+    const code = req.params.roomID;
+    const user = req.user as IUser;
+    try {
+      const room = await joinRoom(code, user);
+      if (room) {
+        res.status(200).json({ room, userId: user._id });
+      } else {
+        res.send(404);
+      }
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
   }
-});
+);
 
 // router.get('/rooms/:roomID/users', authenticateUser, getUsersForRoom);
 
