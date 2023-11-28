@@ -35,7 +35,6 @@ function App() {
   function handleCreateRoom() {
     fetch(`${SERVER_BASE_URL}/api/rooms`, {
       method: 'POST',
-      mode: 'cors',
     })
       .then((res) => res.json())
       .then((json) => {
