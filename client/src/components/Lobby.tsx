@@ -1,13 +1,13 @@
 import React from 'react';
-import { io } from 'socket.io-client';
 
 import './Lobby.css';
 import { SERVER_BASE_URL } from '../const';
 import { SocketMessage } from '../types';
-
-const socket = io(SERVER_BASE_URL, { autoConnect: false });
+import { useAppContext } from '../App';
 
 function Lobby() {
+  const { socket } = useAppContext();
+
   React.useEffect(() => {
     socket.on('connect_error', (err) => {
       if (err.message === SocketMessage.INVALID_USER) {
@@ -22,7 +22,7 @@ function Lobby() {
     return () => {
       socket.off('connect_error');
     };
-  }, []);
+  }, [socket]);
 
   function handleJoinRoom(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
