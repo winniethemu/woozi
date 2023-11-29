@@ -2,13 +2,18 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-import App from './App.tsx';
+import Lobby from './components/Lobby.tsx';
+import Room from './components/Room.tsx';
 import './index.css';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <App />,
+    element: <Lobby />,
+  },
+  {
+    path: 'room/:roomCode',
+    element: <Room />,
   },
 ]);
 

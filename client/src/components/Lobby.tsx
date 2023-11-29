@@ -1,13 +1,13 @@
 import React from 'react';
 import { io } from 'socket.io-client';
 
-import './App.css';
-import { SERVER_BASE_URL } from './const';
-import { SocketMessage } from './types';
+import './Lobby.css';
+import { SERVER_BASE_URL } from '../const';
+import { SocketMessage } from '../types';
 
 const socket = io(SERVER_BASE_URL, { autoConnect: false });
 
-function App() {
+function Lobby() {
   React.useEffect(() => {
     socket.on('connect_error', (err) => {
       if (err.message === SocketMessage.INVALID_USER) {
@@ -64,4 +64,4 @@ function App() {
   );
 }
 
-export default App;
+export default Lobby;
