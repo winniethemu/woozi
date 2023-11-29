@@ -18,7 +18,7 @@ export function AppProvider({ ...props }) {
 export function useAppContext() {
   const value = React.useContext(AppContext);
   if (!value) {
-    throw new Error('useApp must be used within an AppProvider');
+    throw new Error('useAppContext must be used within an AppProvider');
   }
   return value;
 }

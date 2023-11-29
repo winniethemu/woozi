@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import './Lobby.css';
 import { SERVER_BASE_URL } from '../const';
@@ -7,6 +8,7 @@ import { useAppContext } from '../App';
 
 function Lobby() {
   const { socket } = useAppContext();
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     socket.on('connect_error', (err) => {
@@ -36,6 +38,7 @@ function Lobby() {
         sessionStorage.setItem('userId', userId);
         socket.auth = { code: room.code, userId };
         socket.connect();
+        navigate(`/room/${room.code}`);
       });
   }
 
@@ -50,6 +53,7 @@ function Lobby() {
         sessionStorage.setItem('userId', userId);
         socket.auth = { code, userId };
         socket.connect();
+        navigate(`/room/${code}`);
       });
   }
 
