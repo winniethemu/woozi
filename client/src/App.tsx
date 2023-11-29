@@ -8,8 +8,6 @@ import { SocketMessage } from './types';
 const socket = io(SERVER_BASE_URL, { autoConnect: false });
 
 function App() {
-  const [inGame, setInGame] = React.useState(false);
-
   React.useEffect(() => {
     socket.on('connect_error', (err) => {
       if (err.message === SocketMessage.INVALID_USER) {
@@ -57,17 +55,11 @@ function App() {
 
   return (
     <>
-      {inGame ? (
-        <p>We are in!</p>
-      ) : (
-        <>
-          <form onSubmit={handleJoinRoom}>
-            <input name="code" type="text"></input>
-            <button type="submit">Join</button>
-          </form>
-          <button onClick={handleCreateRoom}>Create</button>
-        </>
-      )}
+      <form onSubmit={handleJoinRoom}>
+        <input name="code" type="text"></input>
+        <button type="submit">Join</button>
+      </form>
+      <button onClick={handleCreateRoom}>Create</button>
     </>
   );
 }
