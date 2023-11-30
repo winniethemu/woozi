@@ -6,8 +6,9 @@ import mongoose from 'mongoose';
 import { Server } from 'socket.io';
 
 import apiRouter from './routes/api';
-import { handleConnect, authHandler } from './socket';
+import { authHandler } from './socket';
 import { CLIENT_BASE_URL, corsOptions } from './const';
+import { SessionSocket, SocketMessage } from './types';
 
 // Read env variables from .env
 dotenv.config();
@@ -33,7 +34,17 @@ const io = new Server(server, {
   },
 });
 io.use(authHandler);
-io.on('connection', handleConnect);
+io.on('connection', async function handleConnect(socket: SessionSocket) {
+  // validated during authHandler
+  const room = socket.room!;
+  const user = socket.user!;
+
+  socket.join(room.code);
+  io.to(room.code).emit(SocketMessage.USER_CONNECTED, {
+    user,
+    room,
+  });
+});
 
 // Start up
 server.listen(port, () => {

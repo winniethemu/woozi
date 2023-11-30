@@ -1,24 +1,27 @@
+import Room from './models/room';
+import User from './models/user';
 import { SessionSocket, SocketMessage } from './types';
 
-export function authHandler(
+export async function authHandler(
   socket: SessionSocket,
   next: (err?: Error) => void
 ) {
   const { code, userId } = socket.handshake.auth;
   if (!code || !userId) {
-    return next(new Error(SocketMessage.INVALID_USER));
+    return next(new Error(SocketMessage.UNKNOWN_SOCKET));
   }
-  socket.code = code;
-  socket.userId = userId;
+
+  const room = await Room.findOne({ code }).exec();
+  if (!room) {
+    return next(new Error(SocketMessage.UNKNOWN_ROOM));
+  }
+
+  const user = await User.findById(userId).exec();
+  if (!user) {
+    return next(new Error(SocketMessage.UNKNOWN_USER));
+  }
+
+  socket.room = room;
+  socket.user = user;
   next();
-}
-
-export function handleConnect(socket: SessionSocket) {
-  const roomCode = socket.code as string;
-  const userId = socket.userId as string;
-
-  socket.join(roomCode);
-  socket.to(roomCode).emit(SocketMessage.USER_CONNECTED, {
-    userId,
-  });
 }

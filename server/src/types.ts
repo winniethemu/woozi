@@ -1,12 +1,16 @@
 import { Request } from 'express';
 import { IUser } from './models/user';
 import { Socket } from 'socket.io';
+import { IRoom } from './models/room';
 
 /**
  * Shared type defs with client
  */
 export enum SocketMessage {
   INVALID_USER = 'INVALID_USER',
+  UNKNOWN_ROOM = 'UNKNWON_ROOM',
+  UNKNOWN_SOCKET = 'UNKNWON_SOCKET',
+  UNKNOWN_USER = 'UNKNWON_USER',
   USER_CONNECTED = 'USER_CONNECTED',
 }
 
@@ -18,6 +22,6 @@ export interface SessionRequest extends Request {
 }
 
 export interface SessionSocket extends Socket {
-  code?: string;
-  userId?: string;
+  room?: IRoom;
+  user?: IUser;
 }
