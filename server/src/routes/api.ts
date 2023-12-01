@@ -1,20 +1,12 @@
 import express, { Request, Response } from 'express';
 
 import user from '../middlewares/user';
-import {
-  createRoom,
-  joinRoom,
-  getRoom,
-  updateRoom,
-  deleteRoom,
-} from '../controllers/roomsController';
+import { createRoom, joinRoom } from '../controllers/roomsController';
 import { getUsersForRoom, updateUser } from '../controllers/usersController';
 import { SessionRequest } from '../types';
 import { IUser } from '../models/user';
 
 const router = express.Router();
-
-router.get('/rooms/:roomID', getRoom);
 
 router.post('/rooms', user, async (req: SessionRequest, res: Response) => {
   const user = req.user as IUser;
@@ -25,10 +17,6 @@ router.post('/rooms', user, async (req: SessionRequest, res: Response) => {
     res.status(500).json({ message: error.message });
   }
 });
-
-router.put('/rooms/:roomID', updateRoom);
-
-router.delete('/rooms/:roomID', deleteRoom);
 
 router.get(
   '/rooms/:roomID/join',
@@ -49,8 +37,9 @@ router.get(
   }
 );
 
+// router.get('/rooms/:roomID', getRoom);
+// router.delete('/rooms/:roomID', deleteRoom);
 // router.get('/rooms/:roomID/users', authenticateUser, getUsersForRoom);
-
 // router.put('/rooms/:roomID/users', authenticateUser, updateUser);
 
 export default router;

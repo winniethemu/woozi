@@ -3,17 +3,13 @@ import { useNavigate } from 'react-router-dom';
 
 import './Lobby.css';
 import { SERVER_BASE_URL } from '../const';
-import { useAppContext } from '../App';
 
-function Lobby() {
-  const { socket } = useAppContext();
+export default function Lobby() {
   const navigate = useNavigate();
 
-  function connectToRoom(code: string, userId: string) {
+  function goToRoom(code: string, userId: string) {
     sessionStorage.setItem('code', code);
     sessionStorage.setItem('userId', userId);
-    socket.auth = { code, userId };
-    socket.connect();
     navigate(`/room/${code}`);
   }
 
@@ -23,7 +19,7 @@ function Lobby() {
     const code = data.get('code')?.toString() ?? '';
     fetch(`${SERVER_BASE_URL}/api/rooms/${code.toUpperCase()}/join`)
       .then((res) => res.json())
-      .then((json) => connectToRoom(json.room.code, json.userId));
+      .then((json) => goToRoom(json.room.code, json.userId));
   }
 
   function handleCreateRoom() {
@@ -31,7 +27,7 @@ function Lobby() {
       method: 'POST',
     })
       .then((res) => res.json())
-      .then((json) => connectToRoom(json.code, json.userId));
+      .then((json) => goToRoom(json.code, json.userId));
   }
 
   return (
@@ -44,5 +40,3 @@ function Lobby() {
     </>
   );
 }
-
-export default Lobby;

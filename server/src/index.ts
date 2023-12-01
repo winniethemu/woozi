@@ -9,6 +9,7 @@ import apiRouter from './routes/api';
 import { authHandler } from './socket';
 import { CLIENT_BASE_URL, corsOptions } from './const';
 import { SessionSocket, SocketMessage } from './types';
+import { leaveRoom } from './controllers/roomsController';
 
 // Read env variables from .env
 dotenv.config();
@@ -43,6 +44,14 @@ io.on('connection', async function handleConnect(socket: SessionSocket) {
   io.to(room.code).emit(SocketMessage.USER_CONNECTED, {
     user,
     room,
+  });
+
+  socket.on('disconnect', async (reason) => {
+    const updatedRoom = await leaveRoom(room.code, [user]);
+    io.to(room.code).emit(SocketMessage.USER_DISCONNECTED, {
+      user,
+      room: updatedRoom,
+    });
   });
 });
 

@@ -25,9 +25,15 @@ export const joinRoom = async (
   return room;
 };
 
-export const updateRoom = (req: Request, res: Response): void => {
-  // Logic to create a new game room
-  res.status(201).send('Room updated');
+export const leaveRoom = async (
+  code: string,
+  users: IUser[]
+): Promise<IRoom | null> => {
+  const update = { $pull: { users: { $in: users } } };
+  const room = await Room.findOneAndUpdate({ code }, update, {
+    new: true,
+  });
+  return room;
 };
 
 export const getRoom = async (req: Request, res: Response): Promise<void> => {

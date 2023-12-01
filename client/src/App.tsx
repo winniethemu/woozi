@@ -35,6 +35,7 @@ export function useAppContext() {
 
     return () => {
       socket.off('connect_error');
+      socket.disconnect();
     };
   }, [socket]);
 
