@@ -3,7 +3,6 @@ import { Request, Response } from 'express';
 import Room, { IRoom } from '../models/room';
 import generateUniqueRoomCode from '../utils/roomCodeGenerator';
 import { IUser } from '../models/user';
-import { createUser } from './usersController';
 
 export const createRoom = async (host: IUser): Promise<string> => {
   const code = await generateUniqueRoomCode();

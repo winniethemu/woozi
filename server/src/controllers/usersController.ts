@@ -1,7 +1,9 @@
 import User, { IUser } from '../models/user';
+import getDisplayName from '../utils/displayName';
 
 export const createUser = async (): Promise<IUser> => {
-  const user = new User();
+  const name = getDisplayName();
+  const user = new User({ name });
   await user.save();
   return user;
 };
