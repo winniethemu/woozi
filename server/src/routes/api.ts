@@ -1,8 +1,7 @@
-import express, { Request, Response } from 'express';
+import express, { Response } from 'express';
 
 import user from '../middlewares/user';
 import { createRoom, joinRoom } from '../controllers/roomsController';
-import { getUsersForRoom, updateUser } from '../controllers/usersController';
 import { SessionRequest } from '../types';
 import { IUser } from '../models/user';
 

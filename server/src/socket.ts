@@ -2,6 +2,9 @@ import Room from './models/room';
 import User from './models/user';
 import { SessionSocket, SocketMessage } from './types';
 
+/**
+ * Executed once per socket connection
+ */
 export async function authHandler(
   socket: SessionSocket,
   next: (err?: Error) => void
