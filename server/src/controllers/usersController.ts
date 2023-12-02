@@ -11,7 +11,9 @@ export const createUser = async (): Promise<IUser> => {
   return user;
 };
 
-export const updateUser = (req: Request, res: Response): void => {
+export const updateUserName = async (newName: string, user: IUser): Promise<IUser> => {
   // Logic for a player to join a room
-  res.status(201).send('Player updated');
+  user.name = newName;
+  await user.save();
+  return user;
 };

@@ -10,6 +10,7 @@ import { authHandler } from './socket';
 import { CLIENT_BASE_URL, corsOptions } from './const';
 import { SessionSocket, SocketMessage } from './types';
 import { leaveRoom } from './controllers/roomsController';
+import { updateUserName } from './controllers/usersController';
 
 // Read env variables from .env
 dotenv.config();
@@ -38,7 +39,7 @@ io.use(authHandler);
 io.on('connection', async function handleConnect(socket: SessionSocket) {
   // validated during authHandler
   const room = socket.room!;
-  const user = socket.user!;
+  let user = socket.user!;
 
   socket.join(room.code);
   io.to(room.code).emit(SocketMessage.USER_CONNECTED, {
@@ -51,6 +52,15 @@ io.on('connection', async function handleConnect(socket: SessionSocket) {
     io.to(room.code).emit(SocketMessage.USER_DISCONNECTED, {
       user,
       room: updatedRoom,
+    });
+  });
+
+  socket.on('user_name_update', async (newName: string) => {
+    console.log(newName);
+    user = await updateUserName(newName, user)
+    socket.user = user
+    io.to(room.code).emit(SocketMessage.USER_NAME_UPDATED, {
+      user,
     });
   });
 });
