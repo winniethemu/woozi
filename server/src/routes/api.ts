@@ -4,6 +4,7 @@ import user from '../middlewares/user';
 import { createRoom, joinRoom } from '../controllers/roomsController';
 import { SessionRequest } from '../types';
 import { IUser } from '../models/user';
+import { updateUser } from '../controllers/usersController';
 
 const router = express.Router();
 
@@ -35,6 +36,16 @@ router.get(
     }
   }
 );
+
+router.patch('/users/:userId', async (req: SessionRequest, res: Response) => {
+  const userId = req.params.userId;
+  try {
+    await updateUser(userId, req.body);
+    res.sendStatus(200);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 // router.get('/rooms/:roomID', getRoom);
 // router.delete('/rooms/:roomID', deleteRoom);

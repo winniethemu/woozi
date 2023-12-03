@@ -12,7 +12,7 @@ export interface IRoom extends Document {
 
 // Mongoose schema defining the structure of a Room
 const RoomSchema: Schema = new Schema({
-  code: { type: String, required: true },
+  code: { type: String, required: true, unique: true },
   users: [{ type: Schema.Types.ObjectId, ref: 'User' }], // Reference to User model
   // Other fields here
   // e.g., description: { type: String, required: false },

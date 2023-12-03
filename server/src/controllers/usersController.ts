@@ -8,9 +8,15 @@ export const createUser = async (): Promise<IUser> => {
   return user;
 };
 
-export const updateUserName = async (newName: string, user: IUser): Promise<IUser> => {
-  // Logic for a player to join a room
-  user.name = newName;
-  await user.save();
-  return user;
+export const updateUser = async (
+  userId: string,
+  data: Partial<IUser>
+): Promise<IUser | null> => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new Error(`User ${userId} not found`);
+  }
+  const record = Object.assign(user, data);
+  await record.save();
+  return record;
 };
