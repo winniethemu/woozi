@@ -6,11 +6,11 @@ import { SERVER_BASE_URL } from '../const';
 
 export default function Lobby() {
   const navigate = useNavigate();
-  const userId = sessionStorage.getItem('userId');
+  const userId = localStorage.getItem('userId');
 
   function onboard(code: string, userId: string) {
-    sessionStorage.setItem('code', code);
-    sessionStorage.setItem('userId', userId);
+    localStorage.setItem('code', code);
+    localStorage.setItem('userId', userId);
     navigate(`/room/${code}`);
   }
 

@@ -6,12 +6,12 @@ import { useAppContext } from '../App';
 export default function Room() {
   const [room, setRoom] = React.useState<IRoom | null>(null);
   const [showUpdateName, setShowUpdateName] = React.useState<boolean>(() => {
-    const value = sessionStorage.getItem('name');
+    const value = localStorage.getItem('name');
     return !value;
   });
   const { socket } = useAppContext();
-  const code = sessionStorage.getItem('code');
-  const userId = sessionStorage.getItem('userId');
+  const code = localStorage.getItem('code');
+  const userId = localStorage.getItem('userId');
 
   React.useEffect(() => {
     socket.on(SocketMessage.USER_CONNECTED, ({ room }) => {
@@ -40,7 +40,7 @@ export default function Room() {
     const name = data.get('username')?.toString();
     if (!name) return; // TODO: provide error message
     socket.emit(SocketMessage.UPDATE_USER_NAME, name);
-    sessionStorage.setItem('name', name);
+    localStorage.setItem('name', name);
     setShowUpdateName(false);
   }
 
