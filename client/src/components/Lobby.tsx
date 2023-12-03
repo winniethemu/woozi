@@ -11,7 +11,11 @@ export default function Lobby() {
   function onboard(code: string, userId: string) {
     sessionStorage.setItem('code', code);
     sessionStorage.setItem('userId', userId);
-    setShowUpdateName(true);
+    if (!sessionStorage.getItem('name')) {
+      setShowUpdateName(true);
+    } else {
+      navigate(`/room/${code}`);
+    }
   }
 
   function handleJoin(e: React.FormEvent<HTMLFormElement>) {
@@ -44,8 +48,10 @@ export default function Lobby() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ name }),
-    }).then(() => {
+    }).then((res) => res.json())
+      .then((json) => {
       const code = sessionStorage.getItem('code');
+      sessionStorage.setItem('name', json.user.name);
       navigate(`/room/${code}`);
     });
   }
