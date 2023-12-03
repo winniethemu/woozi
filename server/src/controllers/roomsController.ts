@@ -18,11 +18,7 @@ export const joinRoom = async (
 ): Promise<IRoom | null> => {
   // Use $addToSet to avoid adding duplicates
   const update = { $addToSet: { users: user } };
-  // Use {new: true} to return the updated document
-  const room = await Room.findOneAndUpdate({ code }, update, {
-    new: true,
-  });
-  return room;
+  return await updateRoom(code, update);
 };
 
 export const leaveRoom = async (
@@ -30,6 +26,14 @@ export const leaveRoom = async (
   users: IUser[]
 ): Promise<IRoom | null> => {
   const update = { $pull: { users: { $in: users } } };
+  return await updateRoom(code, update);
+};
+
+export const updateRoom = async (
+  code: string,
+  update: object
+): Promise<IRoom | null> => {
+  // Use {new: true} to return the updated document
   const room = await Room.findOneAndUpdate({ code }, update, {
     new: true,
   });

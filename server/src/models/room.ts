@@ -14,7 +14,7 @@ export interface IRoom extends Document {
 // Mongoose schema defining the structure of a Room
 export const RoomSchema: Schema = new Schema({
   code: { type: String, required: true, unique: true },
-  users: [{ type: UserSchema }],
+  users: [UserSchema],
   // Other fields here
   // e.g., description: { type: String, required: false },
   // e.g., createdBy: { type: String, required: true },

@@ -10,6 +10,9 @@ import { authHandler } from './socket';
 import { CLIENT_BASE_URL, corsOptions } from './const';
 import { SessionSocket, SocketMessage } from './types';
 import { leaveRoom } from './controllers/roomsController';
+import { Socket } from 'dgram';
+import User, { IUser } from './models/user';
+import Room from './models/room';
 
 // Read env variables from .env
 dotenv.config();
@@ -43,14 +46,34 @@ io.on('connection', async function handleConnect(socket: SessionSocket) {
 
   socket.join(room.code);
   io.to(room.code).emit(SocketMessage.USER_CONNECTED, {
-    user,
     room,
   });
+
+  socket.on(
+    SocketMessage.UPDATE_USER_NAME,
+    async function handleUpdateName(name: string) {
+      const query = { code: room.code, 'users._id': user._id };
+      const update = { $set: { 'users.$.name': name } };
+      const updatedRoom = await Room.findOneAndUpdate(query, update, {
+        new: true,
+      });
+
+      await User.findOneAndUpdate(
+        { _id: user._id },
+        {
+          $set: { name },
+        }
+      );
+
+      io.to(room.code).emit(SocketMessage.UPDATE_USER_NAME, {
+        room: updatedRoom,
+      });
+    }
+  );
 
   socket.on('disconnect', async (reason) => {
     const updatedRoom = await leaveRoom(room.code, [user]);
     io.to(room.code).emit(SocketMessage.USER_DISCONNECTED, {
-      user,
       room: updatedRoom,
     });
   });

@@ -12,9 +12,15 @@ export default async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const userId = req.headers['X-User-ID'] || '';
-  const record = await User.findById(userId).exec();
-  const user = record ?? (await createUser());
+  const userId = req.header('X-User-Id');
+  let user;
+  try {
+    const record = await User.findById(userId).exec();
+    user = record ?? (await createUser());
+  } catch (e: any) {
+    // if userId is '', Mongoose throws error
+    user = await createUser();
+  }
   req.user = user;
   next();
 };
