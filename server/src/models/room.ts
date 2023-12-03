@@ -1,9 +1,10 @@
 import mongoose, { Document, Schema } from 'mongoose';
+import User, { UserSchema } from './user';
 
 // Interface to describe a Room
 export interface IRoom extends Document {
   code: string; // code is a 4 character string
-  users: mongoose.Types.ObjectId[];
+  users: mongoose.Types.DocumentArray<typeof User>;
   // Add other properties here
   // e.g., description: string;
   // e.g., createdBy: string;
@@ -11,9 +12,9 @@ export interface IRoom extends Document {
 }
 
 // Mongoose schema defining the structure of a Room
-const RoomSchema: Schema = new Schema({
+export const RoomSchema: Schema = new Schema({
   code: { type: String, required: true, unique: true },
-  users: [{ type: Schema.Types.ObjectId, ref: 'User' }], // Reference to User model
+  users: [{ type: UserSchema }],
   // Other fields here
   // e.g., description: { type: String, required: false },
   // e.g., createdBy: { type: String, required: true },

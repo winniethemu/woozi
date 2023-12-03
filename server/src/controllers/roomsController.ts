@@ -6,7 +6,8 @@ import { IUser } from '../models/user';
 
 export const createRoom = async (host: IUser): Promise<string> => {
   const code = await generateUniqueRoomCode();
-  const room = new Room({ code, users: [host._id] });
+  // FIX: what if code already exists?
+  const room = new Room({ code, users: [host] });
   await room.save();
   return code;
 };
@@ -16,7 +17,7 @@ export const joinRoom = async (
   user: IUser
 ): Promise<IRoom | null> => {
   // Use $addToSet to avoid adding duplicates
-  const update = { $addToSet: { users: user._id } };
+  const update = { $addToSet: { users: user } };
   // Use {new: true} to return the updated document
   const room = await Room.findOneAndUpdate({ code }, update, {
     new: true,

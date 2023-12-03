@@ -41,7 +41,6 @@ router.patch('/users/:userId', async (req: SessionRequest, res: Response) => {
   const userId = req.params.userId;
   try {
     const user = await updateUser(userId, req.body);
-    console.log(user);
     res.status(200).json({ user });
   } catch (error: any) {
     res.status(500).json({ message: error.message });

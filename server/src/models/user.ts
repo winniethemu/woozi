@@ -10,7 +10,7 @@ export interface IUser extends Document {
 }
 
 // Mongoose schema defining the structure of a Room
-const UserSchema: Schema = new Schema({
+export const UserSchema: Schema = new Schema({
   name: { type: String, required: true },
   // Other fields here
   // e.g., description: { type: String, required: false },

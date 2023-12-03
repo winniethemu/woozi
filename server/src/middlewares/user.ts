@@ -12,7 +12,7 @@ export default async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const userId = req.headers.authorization?.split(' ')[1];
+  const userId = req.headers['X-User-ID'] || '';
   const record = await User.findById(userId).exec();
   const user = record ?? (await createUser());
   req.user = user;

@@ -6,8 +6,8 @@ import { IRoom, IUser, SocketMessage } from '../types';
 export default function Room() {
   const [room, setRoom] = React.useState<IRoom | null>(null);
   const { socket } = useAppContext();
-  const code = sessionStorage.getItem('code');
-  const userId = sessionStorage.getItem('userId');
+  const code = localStorage.getItem('code');
+  const userId = localStorage.getItem('userId');
 
   React.useEffect(() => {
     socket.on(SocketMessage.USER_CONNECTED, ({ room }) => {
