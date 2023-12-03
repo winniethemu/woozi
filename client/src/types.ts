@@ -19,3 +19,14 @@ export enum SocketMessage {
 export interface AppContextType {
   socket: Socket;
 }
+
+export interface IUser {
+  _id: string;
+  name: string;
+}
+
+export interface IRoom {
+  _id: string;
+  code: string;
+  users: IUser[];
+}

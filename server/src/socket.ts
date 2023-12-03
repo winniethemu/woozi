@@ -14,7 +14,7 @@ export async function authHandler(
     return next(new Error(SocketMessage.UNKNOWN_SOCKET));
   }
 
-  const room = await Room.findOne({ code }).exec();
+  const room = await Room.findOne({ code }).populate('users').exec();
   if (!room) {
     return next(new Error(SocketMessage.UNKNOWN_ROOM));
   }

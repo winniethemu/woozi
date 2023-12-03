@@ -1,10 +1,10 @@
 import React from 'react';
 
 import { useAppContext } from '../App';
-import { SocketMessage } from '../types';
+import { IRoom, IUser, SocketMessage } from '../types';
 
 export default function Room() {
-  const [room, setRoom] = React.useState(null);
+  const [room, setRoom] = React.useState<IRoom | null>(null);
   const { socket } = useAppContext();
   const code = sessionStorage.getItem('code');
   const userId = sessionStorage.getItem('userId');
@@ -35,8 +35,8 @@ export default function Room() {
             <h1>Room {room.code}</h1>
           </header>
           <ol>
-            {room.users.map((user: string) => (
-              <li key={user}>{user}</li>
+            {room.users.map((user: IUser) => (
+              <li key={user._id}>{user.name}</li>
             ))}
           </ol>
         </>

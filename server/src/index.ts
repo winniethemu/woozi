@@ -40,7 +40,7 @@ io.use(authHandler);
 io.on('connection', async function handleConnect(socket: SessionSocket) {
   // validated during authHandler
   const room = socket.room!;
-  let user = socket.user!;
+  const user = socket.user!;
 
   socket.join(room.code);
   io.to(room.code).emit(SocketMessage.USER_CONNECTED, {
