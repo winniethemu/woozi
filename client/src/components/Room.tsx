@@ -16,9 +16,6 @@ export default function Room() {
     socket.on(SocketMessage.USER_DISCONNECTED, ({ room }) => {
       setRoom(room);
     });
-    // socket.on(SocketMessage.UPDATE_USER_NAME, ({ room }) => {
-    //   setRoom(room);
-    // });
     socket.auth = { code, userId };
     socket.connect();
 

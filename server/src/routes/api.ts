@@ -47,9 +47,4 @@ router.patch('/users/:userId', async (req: SessionRequest, res: Response) => {
   }
 });
 
-// router.get('/rooms/:roomID', getRoom);
-// router.delete('/rooms/:roomID', deleteRoom);
-// router.get('/rooms/:roomID/users', authenticateUser, getUsersForRoom);
-// router.put('/rooms/:roomID/users', authenticateUser, updateUser);
-
 export default router;
