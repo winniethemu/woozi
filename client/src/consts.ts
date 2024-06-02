@@ -1,1 +1,1 @@
-export const SERVER_ROOT_URL = 'http://localhost:4000';
+export const SERVER_ROOT = '127.0.0.1:5174';

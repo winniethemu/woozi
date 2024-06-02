@@ -2,14 +2,14 @@ import React from 'react';
 import { io } from 'socket.io-client';
 
 import { SocketContextType } from '../types';
-import { SERVER_ROOT_URL } from '../consts';
+import { SERVER_ROOT } from '../consts';
 
 const SocketContext = React.createContext<SocketContextType | null>(null);
 SocketContext.displayName = 'SocketContext';
 
 export function SocketProvider({ ...props }) {
   const value = {
-    socket: io(SERVER_ROOT_URL, {
+    socket: io(SERVER_ROOT, {
       autoConnect: false,
     }),
   };
@@ -28,9 +28,15 @@ export function useSocket() {
       console.log('connection error', err);
     });
 
+    socket.on('connect', () => {
+      console.log('connected to server');
+    });
+
     socket.onAny((event: string, ...args) => {
       console.log(event, args);
     });
+
+    socket.connect();
 
     return () => {
       socket.off('connect_error');

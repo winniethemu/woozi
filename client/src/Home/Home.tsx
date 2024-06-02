@@ -1,8 +1,12 @@
 import React from 'react';
 
+import { useSocket } from '../contexts/SocketContext';
+
 import './Home.css';
 
 function Home() {
+  useSocket();
+
   return (
     <div>
       <header>
