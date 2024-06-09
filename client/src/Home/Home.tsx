@@ -5,7 +5,7 @@ import { useSocket } from '../contexts/SocketContext';
 import './Home.css';
 
 function Home() {
-  useSocket();
+  const { socket } = useSocket();
 
   return (
     <div>
