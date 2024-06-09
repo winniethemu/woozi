@@ -1,27 +1,29 @@
 import express from 'express';
-import { createServer } from 'node:http';
-import { Server } from 'socket.io';
+import { createServer as createHTTPServer } from 'node:http';
+import { createClient as createRedisClient } from 'redis';
+import { Server as SocketServer } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
 
-import { CLIENT_ROOT, PORT } from './consts';
-import { MessageType } from './types';
+import { CLIENT_ROOT, PORT } from './consts.js';
+import { MessageType } from './types.js';
 
 const app = express();
-const server = createServer(app);
-const io = new Server(server, {
+const server = createHTTPServer(app);
+const io = new SocketServer(server, {
   cors: {
     origin: CLIENT_ROOT,
   },
 });
 
-// TODO: use Redis
-const users: Record<string, any> = {};
+const redisClient = createRedisClient();
+redisClient.on('error', (err) => console.error('Redis Client Error', err));
+await redisClient.connect();
 
-io.use((socket, next) => {
+io.use(async (socket, next) => {
   let token = socket.handshake.auth.token;
   if (token === null) {
     token = uuidv4();
-    users[token] = { name: 'Anonymous User' };
+    await redisClient.hSet(token, { name: 'Anonymous User' });
     socket.emit(MessageType.SET_USER_TOKEN, token);
   }
   next();
