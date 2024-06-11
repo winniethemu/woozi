@@ -1,11 +1,13 @@
 import express from 'express';
-import { createServer as createHTTPServer } from 'node:http';
-import { createClient as createRedisClient } from 'redis';
+import { EntityId, Repository } from 'redis-om';
 import { Server as SocketServer } from 'socket.io';
+import { createClient as createRedisClient } from 'redis';
+import { createServer as createHTTPServer } from 'node:http';
 import { v4 as uuidv4 } from 'uuid';
 
 import { CLIENT_ROOT, PORT } from './consts.js';
 import { MessageType } from './types.js';
+import { userSchema } from './models.js';
 
 const app = express();
 const server = createHTTPServer(app);
@@ -15,16 +17,21 @@ const io = new SocketServer(server, {
   },
 });
 
-const redisClient = createRedisClient();
-redisClient.on('error', (err) => console.error('Redis Client Error', err));
-await redisClient.connect();
+const redis = createRedisClient();
+redis.on('error', (err) => console.error('Redis Client Error', err));
+await redis.connect();
+
+const userRepository = new Repository(userSchema, redis);
 
 io.use(async (socket, next) => {
-  let token = socket.handshake.auth.token;
-  if (token === null) {
-    token = uuidv4();
-    await redisClient.hSet(token, { name: 'Anonymous User' });
-    socket.emit(MessageType.SET_USER_TOKEN, token);
+  const token = socket.handshake.auth.token || '';
+  const user = await userRepository.fetch(token);
+  if (!user[EntityId]) {
+    const record = await userRepository.save({ name: 'Anonymous User' });
+    socket.emit(MessageType.SET_USER, {
+      id: record[EntityId],
+      name: record.name,
+    });
   }
   next();
 });
