@@ -3,7 +3,6 @@ import { EntityId, Repository } from 'redis-om';
 import { Server as SocketServer } from 'socket.io';
 import { createClient as createRedisClient } from 'redis';
 import { createServer as createHTTPServer } from 'node:http';
-import { v4 as uuidv4 } from 'uuid';
 
 import { CLIENT_ROOT, PORT } from './consts.js';
 import { MessageType } from './types.js';
