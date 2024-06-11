@@ -1,2 +1,3 @@
 export const SERVER_ROOT = 'http://localhost:3000';
-export const AUTH_TOKEN_NAME = 'wzUserToken';
+export const USER_TOKEN_KEY = 'wzUserToken';
+export const USER_NAME_KEY = 'wzUserName';

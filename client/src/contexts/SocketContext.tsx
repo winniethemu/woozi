@@ -2,14 +2,14 @@ import React from 'react';
 import { io } from 'socket.io-client';
 import { useLocalStorage } from 'usehooks-ts';
 
-import { SocketContextType } from '../types';
-import { AUTH_TOKEN_NAME, SERVER_ROOT } from '../consts';
+import { MessageType, SocketContextType } from '../types';
+import { USER_TOKEN_KEY, SERVER_ROOT, USER_NAME_KEY } from '../consts';
 
 const SocketContext = React.createContext<SocketContextType | null>(null);
 SocketContext.displayName = 'SocketContext';
 
 export function SocketProvider({ ...props }) {
-  const [token] = useLocalStorage(AUTH_TOKEN_NAME, null);
+  const [token] = useLocalStorage(USER_TOKEN_KEY, null);
 
   const value = {
     socket: io(SERVER_ROOT, {
@@ -21,7 +21,8 @@ export function SocketProvider({ ...props }) {
 }
 
 export function useSocket() {
-  const [, setToken] = useLocalStorage(AUTH_TOKEN_NAME, null);
+  const [, setToken] = useLocalStorage(USER_TOKEN_KEY, null);
+  const [, setName] = useLocalStorage(USER_NAME_KEY, null);
   const context = React.useContext(SocketContext);
   if (!context) {
     throw new Error('useSocket must be used within a SocketProvider');
@@ -37,10 +38,11 @@ export function useSocket() {
       console.log('connected to server');
     });
 
-    socket.onAny((event: string, ...payload) => {
+    socket.onAny((event: string, payload) => {
       console.log(event, payload);
-      if (event === 'SET_USER_TOKEN') {
-        setToken(payload[0]);
+      if (event === MessageType.SET_USER) {
+        setToken(payload.token);
+        setName(payload.name);
       }
     });
 
@@ -50,7 +52,7 @@ export function useSocket() {
       socket.off('connect_error');
       socket.disconnect();
     };
-  }, [socket]);
+  }, [socket, setName, setToken]);
 
   return context;
 }
