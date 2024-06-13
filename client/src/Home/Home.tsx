@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLocalStorage } from 'usehooks-ts';
 
 import { SERVER_ROOT, USER_ID_KEY, USER_NAME_KEY } from '../consts';
@@ -10,6 +11,7 @@ function Home() {
   const [userId] = useLocalStorage(USER_ID_KEY, null);
   const [userName, setUserName] = useLocalStorage(USER_NAME_KEY, '');
   const [name, setName] = React.useState(userName);
+  const navigate = useNavigate();
   useSocket();
 
   function updateName() {
@@ -22,6 +24,20 @@ function Home() {
     }).then(() => {
       setUserName(name);
     });
+  }
+
+  function createGame() {
+    fetch(`${SERVER_ROOT}/api/games`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userId }),
+    })
+      .then((res) => res.json())
+      .then((json) => {
+        navigate(`/games/${json.code}`);
+      });
   }
 
   return (
@@ -40,7 +56,7 @@ function Home() {
           />
         </div>
         <div>
-          <button>Create Game</button>
+          <button onClick={createGame}>Create Game</button>
         </div>
         <div>
           <button>Join Game</button>

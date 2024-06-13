@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import { SocketProvider } from './contexts/SocketContext';
 import Home from './Home/Home.tsx';
+import Game from './Game/Game.tsx';
 
 import './index.css';
 
@@ -11,6 +12,10 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <Home />,
+  },
+  {
+    path: 'games/:code',
+    element: <Game />,
   },
 ]);
 
