@@ -1,6 +1,8 @@
 import express from 'express';
 import { EntityKeyName } from 'redis-om';
-import { redis, userRepository } from './index.js';
+
+import { redisClient, userRepository, gameRepository } from './db.js';
+import { createGameCode } from './utils.js';
 
 const router = express.Router();
 
@@ -10,7 +12,7 @@ router.patch(
     const { userId } = req.params;
     try {
       let user = await userRepository.fetch(userId);
-      let userExists = await redis.exists(user[EntityKeyName] as string);
+      let userExists = await redisClient.exists(user[EntityKeyName] as string);
       if (userExists) {
         user = Object.assign(user, req.body);
         await userRepository.save(user);
@@ -22,5 +24,20 @@ router.patch(
     }
   }
 );
+
+router.post('/games', async (req: express.Request, res: express.Response) => {
+  const game = {
+    code: createGameCode(), // TODO: what if code already exists?
+    players: [req.body.userId],
+  };
+
+  try {
+    await gameRepository.save(game);
+    res.status(200).json({ code: game.code });
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
 
 export default router;
