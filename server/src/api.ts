@@ -16,8 +16,10 @@ router.patch(
       if (userExists) {
         user = Object.assign(user, req.body);
         await userRepository.save(user);
+        res.sendStatus(200);
+      } else {
+        res.sendStatus(400);
       }
-      res.sendStatus(200);
     } catch (err) {
       console.error(err);
       res.sendStatus(500);
