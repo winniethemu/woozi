@@ -2,8 +2,8 @@ import React from 'react';
 import { io } from 'socket.io-client';
 import { useLocalStorage } from 'usehooks-ts';
 
-import { MessageType, SocketContextType } from '../types';
-import { USER_ID_KEY, SERVER_ROOT, USER_NAME_KEY } from '../consts';
+import { SocketContextType } from '../types';
+import { USER_ID_KEY, SERVER_ROOT } from '../consts';
 
 const SocketContext = React.createContext<SocketContextType | null>(null);
 SocketContext.displayName = 'SocketContext';
@@ -21,8 +21,6 @@ export function SocketProvider({ ...props }) {
 }
 
 export function useSocket() {
-  const [, setUserId] = useLocalStorage(USER_ID_KEY, null);
-  const [, setUserName] = useLocalStorage(USER_NAME_KEY, null);
   const context = React.useContext(SocketContext);
   if (!context) {
     throw new Error('useSocket must be used within a SocketProvider');
@@ -40,10 +38,6 @@ export function useSocket() {
 
     socket.onAny((event: string, ...payload) => {
       console.log(event, payload);
-      if (event === MessageType.SET_USER) {
-        setUserId(payload[0].id);
-        setUserName(payload[0].name);
-      }
     });
 
     socket.connect();
@@ -52,7 +46,7 @@ export function useSocket() {
       socket.off('connect_error');
       socket.disconnect();
     };
-  }, []);
+  }, [socket]);
 
   return context;
 }
