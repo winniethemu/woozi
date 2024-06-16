@@ -1,11 +1,27 @@
 import express from 'express';
-import { EntityKeyName } from 'redis-om';
+import { EntityId, EntityKeyName } from 'redis-om';
 
 import { Game } from './models.js';
 import { redisClient, userRepository, gameRepository } from './db.js';
 import { createGameCode } from './utils.js';
 
 const router = express.Router();
+
+router.get(
+  '/users/:userId',
+  async (req: express.Request, res: express.Response) => {
+    const { userId } = req.params;
+    let user = await userRepository.fetch(userId);
+    const userExists = await redisClient.exists(user[EntityKeyName] as string);
+    if (!userExists) {
+      user = await userRepository.save({ name: 'Anonymous User' });
+    }
+    res.status(200).json({
+      id: user[EntityId],
+      name: user.name,
+    });
+  }
+);
 
 router.patch(
   '/users/:userId',

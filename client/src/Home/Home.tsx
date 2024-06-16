@@ -3,16 +3,23 @@ import { useNavigate } from 'react-router-dom';
 import { useLocalStorage } from 'usehooks-ts';
 
 import { SERVER_ROOT, USER_ID_KEY, USER_NAME_KEY } from '../consts';
-import { useSocket } from '../contexts/SocketContext';
 
 import './Home.css';
 
 function Home() {
-  const [userId] = useLocalStorage(USER_ID_KEY, null);
+  const [userId, setUserId] = useLocalStorage(USER_ID_KEY, null);
   const [userName, setUserName] = useLocalStorage(USER_NAME_KEY, '');
   const [name, setName] = React.useState(userName);
   const navigate = useNavigate();
-  useSocket();
+
+  React.useEffect(() => {
+    fetch(`${SERVER_ROOT}/api/users/${userId}`)
+      .then((res) => res.json())
+      .then((json) => {
+        setUserId(json.id);
+        setUserName(json.name);
+      });
+  }, [userId, setUserId, setUserName]);
 
   function updateName() {
     fetch(`${SERVER_ROOT}/api/users/${userId}`, {

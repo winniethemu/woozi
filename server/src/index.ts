@@ -21,20 +21,6 @@ const io = new SocketServer(server, {
   cors: { origin: CLIENT_ROOT },
 });
 
-io.use(async (socket, next) => {
-  const token = socket.handshake.auth.token || '';
-  const user = await userRepository.fetch(token);
-  const userExists = await redisClient.exists(user[EntityKeyName] as string);
-  if (!userExists) {
-    const record = await userRepository.save({ name: 'Anonymous User' });
-    socket.emit(MessageType.SET_USER, {
-      id: record[EntityId],
-      name: record.name,
-    });
-  }
-  next();
-});
-
 io.on('connection', (socket) => {
   console.log(`client connection: socket ${socket.id}`);
 });
