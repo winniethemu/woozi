@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLocalStorage } from 'usehooks-ts';
 
-import { SERVER_ROOT, USER_ID_KEY, USER_NAME_KEY } from '../consts';
+import { SERVER_ROOT, USER_ID_KEY, USER_NAME_KEY } from '../../consts';
 
 import './Home.css';
 

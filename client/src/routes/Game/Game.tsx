@@ -4,7 +4,8 @@ import { useParams } from 'react-router-dom';
 import { Box, Button, Dialog, Flex, Text, TextField } from '@radix-ui/themes';
 import { useCopyToClipboard } from 'usehooks-ts';
 
-import { useSocket } from '../contexts/SocketContext';
+import { useSocket } from '../../contexts/SocketContext';
+import { Board } from '../../components';
 
 export default function Game() {
   const { code } = useParams();
@@ -21,6 +22,7 @@ export default function Game() {
   return (
     <div>
       <Text>Welcome to the game {code}!</Text>
+      <Board />
       {createPortal(
         <Dialog.Root open={showShareCodeModal}>
           <Dialog.Content maxWidth="450px">

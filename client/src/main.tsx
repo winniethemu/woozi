@@ -4,8 +4,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Theme } from '@radix-ui/themes';
 
 import { SocketProvider } from './contexts/SocketContext';
-import Home from './Home/Home.tsx';
-import Game from './Game/Game.tsx';
+import { Game, Home } from './routes';
 
 import './index.css';
 import '@radix-ui/themes/styles.css';
