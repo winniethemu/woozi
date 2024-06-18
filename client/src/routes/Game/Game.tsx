@@ -6,6 +6,7 @@ import { useCopyToClipboard } from 'usehooks-ts';
 
 import { useSocket } from '../../contexts/SocketContext';
 import { Board } from '../../components';
+import { BOARD_SIZE } from '../../consts';
 
 export default function Game() {
   const { code } = useParams();
@@ -22,7 +23,7 @@ export default function Game() {
   return (
     <div>
       <Text>Welcome to the game {code}!</Text>
-      <Board />
+      <Board size={BOARD_SIZE} />
       {createPortal(
         <Dialog.Root open={showShareCodeModal}>
           <Dialog.Content maxWidth="450px">

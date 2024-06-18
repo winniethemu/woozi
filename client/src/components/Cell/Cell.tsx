@@ -4,9 +4,10 @@ import Stone from '../Stone/Stone';
 import styles from './Cell.module.css';
 
 export interface CellProps {
-  isStar: boolean;
-  occupied: StoneType | null;
   type: CellType;
+  isStar?: boolean;
+  occupied?: StoneType;
+  size?: number;
 }
 
 const pathConfig = {
@@ -21,10 +22,10 @@ const pathConfig = {
   MIDDLE: 'M0 50 h 100 M50 0 v 100',
 };
 
-export default function Cell({ isStar, occupied, type }: CellProps) {
+export default function Cell({ type, isStar, occupied, size = 40 }: CellProps) {
   return (
-    <div className={styles.container}>
-      <svg viewBox="0 0 100 100" width="50" height="50">
+    <div className={styles.container} style={{ width: size, height: size }}>
+      <svg viewBox="0 0 100 100" width={size} height={size}>
         <path d={pathConfig[type]} stroke="black" strokeWidth={2} />
       </svg>
       {isStar && <div className={styles.star} />}
