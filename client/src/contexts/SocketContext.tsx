@@ -20,6 +20,7 @@ export function SocketProvider({ ...props }) {
   return <SocketContext.Provider value={value} {...props} />;
 }
 
+// eslint-disable-next-line
 export function useSocket() {
   const context = React.useContext(SocketContext);
   if (!context) {
@@ -48,5 +49,5 @@ export function useSocket() {
     };
   }, [socket]);
 
-  return context;
+  return socket;
 }
