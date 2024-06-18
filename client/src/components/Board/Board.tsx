@@ -27,29 +27,70 @@ export default function Board({ size }: BoardProps) {
   return (
     <div>
       {range(size).map((rowIndex) => (
-        <div className={styles.row}>
+        <div key={rowIndex} className={styles.row}>
           {range(size).map((colIndex) => {
             if (rowIndex + colIndex === 0) {
-              return <Cell type={CellType.TOP_LEFT_CORNER} />;
+              return (
+                <Cell
+                  type={CellType.TOP_LEFT_CORNER}
+                  key={`${rowIndex}:${colIndex}`}
+                />
+              );
             } else if (rowIndex === 0 && colIndex === size - 1) {
-              return <Cell type={CellType.TOP_RIGHT_CORNER} />;
+              return (
+                <Cell
+                  type={CellType.TOP_RIGHT_CORNER}
+                  key={`${rowIndex}:${colIndex}`}
+                />
+              );
             } else if (rowIndex === size - 1 && colIndex === 0) {
-              return <Cell type={CellType.BOTTOM_LEFT_CORNER} />;
+              return (
+                <Cell
+                  type={CellType.BOTTOM_LEFT_CORNER}
+                  key={`${rowIndex}:${colIndex}`}
+                />
+              );
             } else if (rowIndex === size - 1 && colIndex === size - 1) {
-              return <Cell type={CellType.BOTTOM_RIGHT_CORNER} />;
+              return (
+                <Cell
+                  type={CellType.BOTTOM_RIGHT_CORNER}
+                  key={`${rowIndex}:${colIndex}`}
+                />
+              );
             } else if (rowIndex === 0) {
-              return <Cell type={CellType.TOP_EDGE} />;
+              return (
+                <Cell
+                  type={CellType.TOP_EDGE}
+                  key={`${rowIndex}:${colIndex}`}
+                />
+              );
             } else if (rowIndex === size - 1) {
-              return <Cell type={CellType.BOTTOM_EDGE} />;
+              return (
+                <Cell
+                  type={CellType.BOTTOM_EDGE}
+                  key={`${rowIndex}:${colIndex}`}
+                />
+              );
             } else if (colIndex === 0) {
-              return <Cell type={CellType.LEFT_EDGE} />;
+              return (
+                <Cell
+                  type={CellType.LEFT_EDGE}
+                  key={`${rowIndex}:${colIndex}`}
+                />
+              );
             } else if (colIndex === size - 1) {
-              return <Cell type={CellType.RIGHT_EDGE} />;
+              return (
+                <Cell
+                  type={CellType.RIGHT_EDGE}
+                  key={`${rowIndex}:${colIndex}`}
+                />
+              );
             } else {
               return (
                 <Cell
                   type={CellType.MIDDLE}
                   isStar={isStar(rowIndex, colIndex)}
+                  key={`${rowIndex}:${colIndex}`}
                 />
               );
             }
