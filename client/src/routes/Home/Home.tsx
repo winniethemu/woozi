@@ -42,8 +42,8 @@ function Home() {
       body: JSON.stringify({ userId }),
     })
       .then((res) => res.json())
-      .then((json) => {
-        navigate(`/games/${json.code}`);
+      .then(({ code, color }) => {
+        navigate(`/games/${code}`, { state: { code, color } });
       });
   }
 

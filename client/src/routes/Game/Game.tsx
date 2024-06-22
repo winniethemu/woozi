@@ -1,6 +1,6 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Box, Button, Dialog, Flex, Text, TextField } from '@radix-ui/themes';
 import { useCopyToClipboard } from 'usehooks-ts';
 
@@ -8,7 +8,8 @@ import { Board } from '../../components';
 import { BOARD_SIZE } from '../../consts';
 
 export default function Game() {
-  const { code } = useParams();
+  const { state } = useLocation();
+  const { code, color } = state;
   const [, copy] = useCopyToClipboard();
   const [showShareCodeModal, setShowShareCodeModal] = React.useState(true);
 
@@ -21,7 +22,7 @@ export default function Game() {
   return (
     <div>
       <Text>Welcome to the game {code}!</Text>
-      <Board size={BOARD_SIZE} />
+      <Board color={color} size={BOARD_SIZE} />
       {createPortal(
         <Dialog.Root open={showShareCodeModal}>
           <Dialog.Content maxWidth="450px">

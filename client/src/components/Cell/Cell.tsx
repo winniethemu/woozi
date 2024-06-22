@@ -5,6 +5,7 @@ import styles from './Cell.module.css';
 
 export interface CellProps {
   type: CellType;
+  handlePlaceStone: () => void;
   isStar?: boolean;
   occupied?: StoneType;
   size?: number;
@@ -22,9 +23,19 @@ const pathConfig = {
   MIDDLE: 'M0 50 h 100 M50 0 v 100',
 };
 
-export default function Cell({ type, isStar, occupied, size = 40 }: CellProps) {
+export default function Cell({
+  type,
+  handlePlaceStone,
+  isStar,
+  occupied,
+  size = 40,
+}: CellProps) {
   return (
-    <div className={styles.container} style={{ width: size, height: size }}>
+    <div
+      className={styles.container}
+      style={{ width: size, height: size }}
+      onClick={handlePlaceStone}
+    >
       <svg viewBox="0 0 100 100" width={size} height={size}>
         <path d={pathConfig[type]} stroke="black" strokeWidth={2} />
       </svg>
