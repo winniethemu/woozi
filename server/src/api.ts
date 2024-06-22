@@ -1,8 +1,8 @@
 import express from 'express';
 import mongoose from 'mongoose';
 
-import { User, Game } from './db.js';
-import { createGameCode } from './utils.js';
+import { User, Game, Player } from './db.js';
+import { createGameCode, randomColor } from './utils.js';
 import { GameStatus } from './types.js';
 
 const router = express.Router();
@@ -49,18 +49,27 @@ router.patch(
 
 router.post('/games', async (req: express.Request, res: express.Response) => {
   const { userId } = req.body;
-  const user = await User.findById(userId);
-  const game = new Game({
-    // TODO: what if code already exists?
-    code: createGameCode(),
-    moves: [],
-    players: [user],
-    status: GameStatus.PENDING,
-  });
 
   try {
-    await game.save();
-    res.status(200).json({ code: game.code });
+    const userExists = await User.exists({ _id: userId });
+    if (userExists) {
+      const player = new Player({
+        userId,
+        color: randomColor(),
+      });
+
+      const game = new Game({
+        // TODO: what if code already exists?
+        code: createGameCode(),
+        moves: [],
+        players: [player],
+        status: GameStatus.PENDING,
+      });
+      await game.save();
+      res.status(200).json({ code: game.code, color: player.color });
+    } else {
+      res.sendStatus(400);
+    }
   } catch (err) {
     console.error(err);
     res.sendStatus(500);

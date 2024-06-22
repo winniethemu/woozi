@@ -7,3 +7,8 @@ export enum GameStatus {
   PLAYING = 'PLAYING',
   COMPLETED = 'COMPLETED',
 }
+
+export enum StoneType {
+  BLACK = 'black',
+  WHITE = 'white',
+}
