@@ -1,17 +1,24 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import cors from 'cors';
-import { EntityId, EntityKeyName } from 'redis-om';
 import { Server as SocketServer } from 'socket.io';
 import { createServer } from 'node:http';
 
 import apiRouter from './api.js';
-import { redisClient, userRepository } from './db.js';
-import { CLIENT_ROOT, PORT } from './consts.js';
-import { MessageType } from './types.js';
+import { User } from './db.js';
+import { CLIENT_ROOT, PORT, MONGODB_URL } from './consts.js';
 
 // HTTP server
 const app = express();
 const server = createServer(app);
+
+// DB
+async function db() {
+  await mongoose.connect(MONGODB_URL || '');
+}
+db().catch((err) => console.error(err));
+
+// Middleware
 app.use(express.json());
 app.use(cors({ origin: CLIENT_ROOT }));
 app.use('/api', apiRouter);
@@ -23,8 +30,7 @@ const io = new SocketServer(server, {
 
 io.use(async (socket, next) => {
   const token = socket.handshake.auth.token || '';
-  const user = await userRepository.fetch(token);
-  const userExists = await redisClient.exists(user[EntityKeyName] as string);
+  const userExists = await User.exists({ _id: token });
   if (!userExists) {
     return next(new Error('user not found'));
   }

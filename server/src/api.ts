@@ -1,9 +1,9 @@
 import express from 'express';
-import { EntityId, EntityKeyName } from 'redis-om';
+import mongoose from 'mongoose';
 
-import { Game } from './models.js';
-import { redisClient, userRepository, gameRepository } from './db.js';
+import { User, Game } from './db.js';
 import { createGameCode } from './utils.js';
+import { GameStatus } from './types.js';
 
 const router = express.Router();
 
@@ -11,13 +11,16 @@ router.get(
   '/users/:userId',
   async (req: express.Request, res: express.Response) => {
     const { userId } = req.params;
-    let user = await userRepository.fetch(userId);
-    const userExists = await redisClient.exists(user[EntityKeyName] as string);
-    if (!userExists) {
-      user = await userRepository.save({ name: 'Anonymous User' });
+    let user = null;
+    if (mongoose.isValidObjectId(userId)) {
+      user = await User.findById(userId);
+    }
+    if (!user) {
+      user = new User({ name: 'Anonymous User' });
+      await user.save();
     }
     res.status(200).json({
-      id: user[EntityId],
+      id: user._id,
       name: user.name,
     });
   }
@@ -28,11 +31,11 @@ router.patch(
   async (req: express.Request, res: express.Response) => {
     const { userId } = req.params;
     try {
-      let user = await userRepository.fetch(userId);
-      let userExists = await redisClient.exists(user[EntityKeyName] as string);
-      if (userExists) {
-        user = Object.assign(user, req.body);
-        await userRepository.save(user);
+      let user = await User.findById(userId);
+      if (user) {
+        // TODO: make this more generic
+        user.name = req.body.name;
+        await user.save();
         res.sendStatus(200);
       } else {
         res.sendStatus(400);
@@ -45,11 +48,18 @@ router.patch(
 );
 
 router.post('/games', async (req: express.Request, res: express.Response) => {
-  // TODO: what if code already exists?
-  const game = new Game(createGameCode(), [req.body.userId]);
+  const { userId } = req.body;
+  const user = await User.findById(userId);
+  const game = new Game({
+    // TODO: what if code already exists?
+    code: createGameCode(),
+    moves: [],
+    players: [user],
+    status: GameStatus.PENDING,
+  });
 
   try {
-    await gameRepository.save(game);
+    await game.save();
     res.status(200).json({ code: game.code });
   } catch (err) {
     console.error(err);

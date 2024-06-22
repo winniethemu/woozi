@@ -1,29 +1,47 @@
-import { createClient } from 'redis';
-import { Repository, Schema } from 'redis-om';
+import mongoose, { Document, Schema, Types } from 'mongoose';
 
-/**
- * Init DB
- */
-const redisClient = createClient();
-redisClient.on('error', (err) => console.error('Redis Client Error', err));
-await redisClient.connect();
+import { GameStatus } from './types.js';
+
+interface IUser extends Document {
+  name: string;
+}
+
+interface IMove extends Document {
+  player: IUser;
+  position: [number, number];
+}
+
+interface IGame extends Document {
+  code: string;
+  moves: Array<IMove>;
+  players: Types.DocumentArray<IUser>;
+  status: GameStatus;
+}
 
 /**
  * Schemas
  */
-const userSchema = new Schema('user', {
-  name: { type: 'string' },
+const userSchema = new Schema({
+  name: { type: String, required: true },
 });
 
-const gameSchema = new Schema('game', {
-  code: { type: 'string' },
-  players: { type: 'string[]' },
+const moveSchema = new Schema({
+  player: userSchema,
+  position: [Number],
+});
+
+const gameSchema = new Schema({
+  code: { type: String, required: true, unique: true },
+  moves: [moveSchema],
+  players: [userSchema],
+  status: { type: String, required: true },
 });
 
 /**
- * Repositories
+ * Models
  */
-const userRepository = new Repository(userSchema, redisClient);
-const gameRepository = new Repository(gameSchema, redisClient);
+const User = mongoose.model<IUser>('User', userSchema);
+const Move = mongoose.model<IMove>('Move', moveSchema);
+const Game = mongoose.model<IGame>('Game', gameSchema);
 
-export { redisClient, userRepository, gameRepository };
+export { User, Move, Game };

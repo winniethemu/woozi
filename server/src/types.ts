@@ -7,8 +7,3 @@ export enum GameStatus {
   PLAYING = 'PLAYING',
   COMPLETED = 'COMPLETED',
 }
-
-export interface Move {
-  player: string;
-  position: [number, number];
-}
