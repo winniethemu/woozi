@@ -2,27 +2,33 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import { useLocation } from 'react-router-dom';
 import { Box, Button, Dialog, Flex, Text, TextField } from '@radix-ui/themes';
-import { useCopyToClipboard } from 'usehooks-ts';
+import { useCopyToClipboard, useReadLocalStorage } from 'usehooks-ts';
 
 import { Board } from '../../components';
-import { BOARD_SIZE } from '../../consts';
+import { BOARD_SIZE, USER_ID_KEY } from '../../consts';
+import { GameData } from '../../types';
 
 export default function Game() {
   const { state } = useLocation();
-  const { code, color } = state;
+  const [data] = React.useState<GameData>(state);
   const [, copy] = useCopyToClipboard();
-  const [showShareCodeModal, setShowShareCodeModal] = React.useState(true);
+  const [showShareCodeModal, setShowShareCodeModal] = React.useState(false);
+  const userId = useReadLocalStorage<string>(USER_ID_KEY);
+  const me = data.players.find((player) => player.userId === userId);
+  if (!me) {
+    throw new Error('Player not found');
+  }
 
   function handleCopyCode() {
-    copy(code as string).then(() => {
+    copy(data.code).then(() => {
       setShowShareCodeModal(false);
     });
   }
 
   return (
     <div>
-      <Text>Welcome to the game {code}!</Text>
-      <Board color={color} size={BOARD_SIZE} />
+      <Text>Welcome to the game {data.code}!</Text>
+      <Board player={me} size={BOARD_SIZE} />
       {createPortal(
         <Dialog.Root open={showShareCodeModal}>
           <Dialog.Content maxWidth="450px">
@@ -32,7 +38,7 @@ export default function Game() {
             </Dialog.Description>
             <Flex direction="row" gap="3">
               <Box width="100%">
-                <TextField.Root defaultValue={code} disabled={true} />
+                <TextField.Root defaultValue={data.code} disabled={true} />
               </Box>
               <Button onClick={handleCopyCode}>Copy</Button>
             </Flex>

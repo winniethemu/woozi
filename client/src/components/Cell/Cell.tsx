@@ -4,10 +4,10 @@ import Stone from '../Stone/Stone';
 import styles from './Cell.module.css';
 
 export interface CellProps {
+  occupied: StoneType | '';
   type: CellType;
   handlePlaceStone: () => void;
   isStar?: boolean;
-  occupied?: StoneType;
   size?: number;
 }
 

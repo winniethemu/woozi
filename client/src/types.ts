@@ -24,3 +24,27 @@ export enum StoneType {
   BLACK = 'black',
   WHITE = 'white',
 }
+
+export enum GameStatus {
+  PENDING = 'PENDING',
+  PLAYING = 'PLAYING',
+  COMPLETED = 'COMPLETED',
+}
+
+export interface Player {
+  userId: string;
+  color: StoneType;
+}
+
+export interface Move {
+  player: Player;
+  row: number;
+  col: number;
+}
+
+export interface GameData {
+  code: string;
+  players: Player[];
+  moves: Move[];
+  status: GameStatus;
+}

@@ -2,14 +2,15 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLocalStorage } from 'usehooks-ts';
 
+import { GameData } from '../../types';
 import { SERVER_ROOT, USER_ID_KEY, USER_NAME_KEY } from '../../consts';
 
 import './Home.css';
 
 function Home() {
-  const [userId, setUserId] = useLocalStorage(USER_ID_KEY, null);
-  const [userName, setUserName] = useLocalStorage(USER_NAME_KEY, '');
-  const [name, setName] = React.useState(userName);
+  const [userId, setUserId] = useLocalStorage<string>(USER_ID_KEY, '');
+  const [userName, setUserName] = useLocalStorage<string>(USER_NAME_KEY, '');
+  const [name, setName] = React.useState<string>(userName);
   const navigate = useNavigate();
 
   React.useEffect(() => {
@@ -42,8 +43,8 @@ function Home() {
       body: JSON.stringify({ userId }),
     })
       .then((res) => res.json())
-      .then(({ code, color }) => {
-        navigate(`/games/${code}`, { state: { code, color } });
+      .then((data: GameData) => {
+        navigate(`/games/${data.code}`, { state: data });
       });
   }
 

@@ -1,14 +1,14 @@
 import React from 'react';
 
 import Cell from '../Cell/Cell';
-import { CellType } from '../../types';
+import { CellType, Player, StoneType } from '../../types';
 import { range } from '../../utils';
 
 import styles from './Board.module.css';
 import { BOARD_SIZE } from '../../consts';
 
 export interface BoardProps {
-  color: string;
+  player: Player;
   size: number;
 }
 
@@ -29,12 +29,12 @@ function isStar(row: number, col: number) {
   return false;
 }
 
-export default function Board({ color, size }: BoardProps) {
-  const [board, setBoard] = React.useState(emptyBoard);
+export default function Board({ player, size }: BoardProps) {
+  const [board, setBoard] = React.useState<(StoneType | '')[][]>(emptyBoard);
 
   function handlePlaceStone(row: number, col: number) {
     const nextBoard = structuredClone(board);
-    nextBoard[row][col] = color;
+    nextBoard[row][col] = player.color;
     setBoard(nextBoard);
   }
 
