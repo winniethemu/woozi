@@ -12,7 +12,7 @@ export default function Game() {
   const { state } = useLocation();
   const [data] = React.useState<GameData>(state);
   const [, copy] = useCopyToClipboard();
-  const [showShareCodeModal, setShowShareCodeModal] = React.useState(false);
+  const [showShareCodeModal, setShowShareCodeModal] = React.useState(true);
   const userId = useReadLocalStorage<string>(USER_ID_KEY);
   const me = data.players.find((player) => player.userId === userId);
   if (!me) {

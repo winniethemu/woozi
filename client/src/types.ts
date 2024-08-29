@@ -38,8 +38,7 @@ export interface Player {
 
 export interface Move {
   player: Player;
-  row: number;
-  col: number;
+  position: [number, number];
 }
 
 export interface GameData {

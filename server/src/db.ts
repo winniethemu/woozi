@@ -6,20 +6,20 @@ interface IUser extends Document {
   name: string;
 }
 
-interface IPlayer extends IUser {
+interface IPlayer extends Document {
   color: StoneType;
   userId: Types.ObjectId;
 }
 
 interface IMove extends Document {
-  player: IUser;
+  player: IPlayer;
   position: [number, number];
 }
 
 interface IGame extends Document {
   code: string;
   moves: Array<IMove>;
-  players: Types.DocumentArray<IUser>;
+  players: Array<IPlayer>;
   status: GameStatus;
 }
 
@@ -28,11 +28,12 @@ interface IGame extends Document {
  */
 const userSchema = new Schema({
   name: { type: String, required: true },
+  // TODO: online or idle status? useful for random match
 });
 
 const playerSchema = new Schema({
-  color: String,
-  userId: Types.ObjectId,
+  color: { type: String, required: true },
+  userId: { type: Types.ObjectId, required: true },
 });
 
 const moveSchema = new Schema({

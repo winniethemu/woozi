@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 
 import { User, Game, Player } from './db.js';
 import { createGameCode, randomColor } from './utils.js';
-import { GameStatus } from './types.js';
+import { GameStatus, StoneType } from './types.js';
 
 const router = express.Router();
 
@@ -80,5 +80,54 @@ router.post('/games', async (req: express.Request, res: express.Response) => {
     res.sendStatus(500);
   }
 });
+
+router.post(
+  '/games/:code/join',
+  async (req: express.Request, res: express.Response) => {
+    const { code } = req.params;
+    const { userId } = req.body;
+    try {
+      const userExists = await User.exists({ _id: userId });
+      if (!userExists) {
+        res.sendStatus(400);
+        return;
+      }
+
+      const game = await Game.findOne({ code });
+      if (!game) {
+        res.sendStatus(400);
+        return;
+      }
+
+      // game is full
+      if (game.players.length !== 1 || game.status !== GameStatus.PENDING) {
+        res.sendStatus(400);
+        return;
+      }
+
+      const opponent = game.players[0];
+      const player = new Player({
+        userId,
+        color:
+          opponent.color === StoneType.BLACK
+            ? StoneType.WHITE
+            : StoneType.BLACK,
+      });
+      game.players.push(player);
+      game.status = GameStatus.PLAYING;
+      await game.save();
+      res.status(200).json({
+        code: game.code,
+        moves: game.moves,
+        players: game.players,
+        status: game.status,
+      });
+      // TODO: notify other player game has started
+    } catch (err) {
+      console.error(err);
+      res.sendStatus(500);
+    }
+  }
+);
 
 export default router;

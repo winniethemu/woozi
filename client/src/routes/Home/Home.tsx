@@ -8,9 +8,10 @@ import { SERVER_ROOT, USER_ID_KEY, USER_NAME_KEY } from '../../consts';
 import './Home.css';
 
 function Home() {
-  const [userId, setUserId] = useLocalStorage<string>(USER_ID_KEY, '');
+  const [userId, setUserId] = useLocalStorage<string | null>(USER_ID_KEY, null);
   const [userName, setUserName] = useLocalStorage<string>(USER_NAME_KEY, '');
   const [name, setName] = React.useState<string>(userName);
+  const [code, setCode] = React.useState<string>('');
   const navigate = useNavigate();
 
   React.useEffect(() => {
@@ -48,6 +49,20 @@ function Home() {
       });
   }
 
+  function joinGame() {
+    fetch(`${SERVER_ROOT}/api/games/${code.toUpperCase()}/join`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userId }),
+    })
+      .then((res) => res.json())
+      .then((data: GameData) => {
+        navigate(`/games/${data.code}`, { state: data });
+      });
+  }
+
   return (
     <div>
       <header>
@@ -67,7 +82,13 @@ function Home() {
           <button onClick={createGame}>Create Game</button>
         </div>
         <div>
-          <button>Join Game</button>
+          <button onClick={joinGame}>Join Game</button>
+          <input
+            value={code}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setCode(e.target.value)
+            }
+          />
         </div>
         <div>
           <button>Random Match</button>
