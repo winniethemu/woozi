@@ -1,7 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 
-import { User, Game, Player } from './db.js';
+import { User, Game } from './db.js';
 import { createGameCode, randomColor } from './utils.js';
 import { GameStatus, StoneType } from './types.js';
 
@@ -53,10 +53,10 @@ router.post('/games', async (req: express.Request, res: express.Response) => {
   try {
     const userExists = await User.exists({ _id: userId });
     if (userExists) {
-      const player = new Player({
+      const player = {
         userId,
         color: randomColor(),
-      });
+      };
 
       const game = new Game({
         // TODO: what if code already exists?
@@ -106,13 +106,13 @@ router.post(
       }
 
       const opponent = game.players[0];
-      const player = new Player({
+      const player = {
         userId,
         color:
           opponent.color === StoneType.BLACK
             ? StoneType.WHITE
             : StoneType.BLACK,
-      });
+      };
       game.players.push(player);
       game.status = GameStatus.PLAYING;
       await game.save();

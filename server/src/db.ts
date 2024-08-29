@@ -6,20 +6,20 @@ interface IUser extends Document {
   name: string;
 }
 
-interface IPlayer extends Document {
+interface Player {
   color: StoneType;
   userId: Types.ObjectId;
 }
 
-interface IMove extends Document {
-  player: IPlayer;
+interface Move {
+  player: Player;
   position: [number, number];
 }
 
 interface IGame extends Document {
   code: string;
-  moves: Array<IMove>;
-  players: Array<IPlayer>;
+  moves: Array<Move>;
+  players: Array<Player>;
   status: GameStatus;
 }
 
@@ -52,8 +52,6 @@ const gameSchema = new Schema({
  * Models
  */
 const Game = mongoose.model<IGame>('Game', gameSchema);
-const Move = mongoose.model<IMove>('Move', moveSchema);
-const Player = mongoose.model<IPlayer>('Player', playerSchema);
 const User = mongoose.model<IUser>('User', userSchema);
 
-export { Game, Move, Player, User };
+export { Game, User };
