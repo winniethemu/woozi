@@ -66,7 +66,12 @@ router.post('/games', async (req: express.Request, res: express.Response) => {
         status: GameStatus.PENDING,
       });
       await game.save();
-      res.status(200).json({ code: game.code, color: player.color });
+      res.status(200).json({
+        code: game.code,
+        moves: game.moves,
+        players: game.players,
+        status: game.status,
+      });
     } else {
       res.sendStatus(400);
     }
