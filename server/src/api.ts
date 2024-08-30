@@ -2,7 +2,12 @@ import express from 'express';
 import mongoose from 'mongoose';
 
 import { User, Game } from './db.js';
-import { createGameCode, randomColor } from './utils.js';
+import {
+  createGameCode,
+  isParticipant,
+  missingOpponent,
+  randomColor,
+} from './utils.js';
 import { GameStatus, StoneType } from './types.js';
 
 const router = express.Router();
@@ -94,8 +99,12 @@ router.post(
         return;
       }
 
-      // game is full
-      if (game.players.length !== 1 || game.status !== GameStatus.PENDING) {
+      if (isParticipant(userId, game)) {
+        res.status(200).json(game);
+        return;
+      }
+
+      if (!missingOpponent(game)) {
         res.sendStatus(400);
         return;
       }

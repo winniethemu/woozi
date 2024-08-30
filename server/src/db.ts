@@ -1,27 +1,6 @@
-import mongoose, { Document, Schema, Types } from 'mongoose';
+import mongoose, { Schema, Types } from 'mongoose';
 
-import { GameStatus, StoneType } from './types.js';
-
-interface IUser extends Document {
-  name: string;
-}
-
-interface Player {
-  color: StoneType;
-  userId: Types.ObjectId;
-}
-
-interface Move {
-  player: Player;
-  position: [number, number];
-}
-
-interface IGame extends Document {
-  code: string;
-  moves: Array<Move>;
-  players: Array<Player>;
-  status: GameStatus;
-}
+import { IGame, IUser } from './types.js';
 
 /**
  * Schemas
