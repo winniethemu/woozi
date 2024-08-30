@@ -66,12 +66,7 @@ router.post('/games', async (req: express.Request, res: express.Response) => {
         status: GameStatus.PENDING,
       });
       await game.save();
-      res.status(200).json({
-        code: game.code,
-        moves: game.moves,
-        players: game.players,
-        status: game.status,
-      });
+      res.status(200).json(game);
     } else {
       res.sendStatus(400);
     }
@@ -116,12 +111,7 @@ router.post(
       game.players.push(player);
       game.status = GameStatus.PLAYING;
       await game.save();
-      res.status(200).json({
-        code: game.code,
-        moves: game.moves,
-        players: game.players,
-        status: game.status,
-      });
+      res.status(200).json(game);
       // TODO: notify other player game has started
     } catch (err) {
       console.error(err);
