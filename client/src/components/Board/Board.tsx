@@ -1,15 +1,17 @@
 import React from 'react';
+import { Socket } from 'socket.io-client';
 
 import Cell from '../Cell/Cell';
+import { BOARD_SIZE } from '../../consts';
 import { CellType, Player, StoneType } from '../../types';
 import { range } from '../../utils';
 
 import styles from './Board.module.css';
-import { BOARD_SIZE } from '../../consts';
 
 export interface BoardProps {
   player: Player;
   size: number;
+  socket: Socket;
 }
 
 const starPoints = [
@@ -29,7 +31,7 @@ function isStar(row: number, col: number) {
   return false;
 }
 
-export default function Board({ player, size }: BoardProps) {
+export default function Board({ player, size, socket }: BoardProps) {
   const [board, setBoard] = React.useState<(StoneType | '')[][]>(emptyBoard);
 
   function handlePlaceStone(row: number, col: number) {

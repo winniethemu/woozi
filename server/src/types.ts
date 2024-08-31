@@ -2,6 +2,7 @@ import { Document, Types } from 'mongoose';
 
 export enum MessageType {
   SET_USER = 'SET_USER',
+  JOIN_ROOM = 'JOIN_ROOM',
 }
 
 export enum GameStatus {
@@ -34,4 +35,9 @@ export interface IGame extends Document {
   moves: Array<Move>;
   players: Array<Player>;
   status: GameStatus;
+}
+
+export interface SocketMessage {
+  type: string;
+  payload: any;
 }

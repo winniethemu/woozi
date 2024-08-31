@@ -6,18 +6,24 @@ import { useCopyToClipboard, useReadLocalStorage } from 'usehooks-ts';
 
 import { Board } from '../../components';
 import { BOARD_SIZE, USER_ID_KEY } from '../../consts';
-import { GameData } from '../../types';
+import { GameData, MessageType } from '../../types';
+import { useSocket } from '../../contexts/SocketContext';
 
 export default function Game() {
   const { state } = useLocation();
   const [data] = React.useState<GameData>(state);
   const [, copy] = useCopyToClipboard();
   const [showShareCodeModal, setShowShareCodeModal] = React.useState(true);
+  const socket = useSocket();
   const userId = useReadLocalStorage<string>(USER_ID_KEY);
   const me = data.players.find((player) => player.userId === userId);
   if (!me) {
     throw new Error('Player not found');
   }
+
+  React.useEffect(() => {
+    socket.emit(MessageType.JOIN_ROOM, data.code);
+  }, [socket, data.code]);
 
   function handleCopyCode() {
     copy(data.code).then(() => {
@@ -28,7 +34,7 @@ export default function Game() {
   return (
     <div>
       <Text>Welcome to the game {data.code}!</Text>
-      <Board player={me} size={BOARD_SIZE} />
+      <Board player={me} size={BOARD_SIZE} socket={socket} />
       {createPortal(
         <Dialog.Root open={showShareCodeModal}>
           <Dialog.Content maxWidth="450px">

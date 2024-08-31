@@ -6,6 +6,7 @@ export interface SocketContextType {
 
 export enum MessageType {
   SET_USER = 'SET_USER',
+  JOIN_ROOM = 'JOIN_ROOM',
 }
 
 export enum CellType {
