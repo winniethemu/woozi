@@ -36,30 +36,11 @@ export default function Board({ game, size }: BoardProps) {
   const socket = useSocket();
   const userId = useReadLocalStorage<string>(USER_ID_KEY);
   const me = game.players.find((player) => player.userId === userId);
-
-  const handleOpponentMove = React.useCallback(
-    (move: Move) => {
-      const [row, col] = move.position;
-      const nextBoard = structuredClone(board);
-      nextBoard[row][col] = move.player.color;
-      setBoard(nextBoard);
-    },
-    [board]
-  );
-
-  React.useEffect(() => {
-    socket.emit(MessageType.JOIN_ROOM, game.code);
-    socket.on(MessageType.PLACE_STONE, (move) => handleOpponentMove(move));
-    return () => {
-      socket.off();
-    };
-  }, [socket, game.code, handleOpponentMove]);
-
   if (!me) {
     throw new Error('Player not found');
   }
 
-  function handleMyMove(row: number, col: number) {
+  const handleMyMove = (row: number, col: number) => {
     const nextBoard = structuredClone(board);
     nextBoard[row][col] = me!.color;
     setBoard(nextBoard);
@@ -74,7 +55,24 @@ export default function Board({ game, size }: BoardProps) {
       move,
     });
     // TODO: handle failure
-  }
+  };
+
+  const handleOpponentMove = React.useCallback((move: Move) => {
+    const [row, col] = move.position;
+    setBoard((currBoard: (StoneType | '')[][]) => {
+      const nextBoard = structuredClone(currBoard);
+      nextBoard[row][col] = move.player.color;
+      return nextBoard;
+    });
+  }, []);
+
+  React.useEffect(() => {
+    socket.emit(MessageType.JOIN_ROOM, game.code);
+    socket.on(MessageType.PLACE_STONE, (move) => handleOpponentMove(move));
+    return () => {
+      socket.off();
+    };
+  }, [socket, game.code, handleOpponentMove]);
 
   return (
     <div>
