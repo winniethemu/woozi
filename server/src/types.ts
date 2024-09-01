@@ -36,6 +36,7 @@ export interface IGame extends Document {
   moves: Array<Move>;
   players: Array<Player>;
   status: GameStatus;
+  turn: StoneType;
 }
 
 export interface SocketMessage {

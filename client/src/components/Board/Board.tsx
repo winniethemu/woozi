@@ -72,7 +72,7 @@ export default function Board({ game, size }: BoardProps) {
     return () => {
       socket.off();
     };
-  }, [socket, game.code, handleOpponentMove]);
+  }, [socket, handleOpponentMove]);
 
   return (
     <div>

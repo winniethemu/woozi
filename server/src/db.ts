@@ -25,6 +25,7 @@ const gameSchema = new Schema({
   moves: [moveSchema],
   players: [playerSchema],
   status: { type: String, required: true },
+  turn: { type: String, required: true },
 });
 
 /**

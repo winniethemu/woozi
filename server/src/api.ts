@@ -69,6 +69,7 @@ router.post('/games', async (req: express.Request, res: express.Response) => {
         moves: [],
         players: [player],
         status: GameStatus.PENDING,
+        turn: StoneType.BLACK,
       });
       await game.save();
       res.status(200).json(game);
