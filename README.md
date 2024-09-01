@@ -22,26 +22,18 @@ pnpm install
 pnpm run dev
 ```
 
-### Redis
+### MongoDB
 
 (Optional) If setting up for the first time
 
 ```shell
-docker pull redis/redis-stack
+docker pull mongodb/mongodb-community-server:latest
 ```
 
 Then
 
 ```shell
-docker run -d --name redis-stack -p 6379:6379 -p 8001:8001 redis/redis-stack:latest
+docker run --name mongodb -p 27017:27017 -d mongodb/mongodb-community-server:latest
 ```
 
-The data in Redis can be inspected via either the CLI
-
-```shell
-redis-cli                             # if installed locally, OR
-docker exec -it redis-stack redis-cli # with Docker
-```
-
-or the Redis Insight UI, which was exposed by the `docker run` command above at
-`localhost:8001`. More info can be found [here](https://redis.io/docs/latest/operate/oss_and_stack/install/install-stack/docker/).
+The data in Mongo can be inspected via `mongosh`, if installed.
