@@ -3,6 +3,7 @@ import { Document, Types } from 'mongoose';
 export enum MessageType {
   SET_USER = 'SET_USER',
   JOIN_ROOM = 'JOIN_ROOM',
+  PLACE_STONE = 'PLACE_STONE',
 }
 
 export enum GameStatus {

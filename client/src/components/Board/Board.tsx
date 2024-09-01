@@ -1,17 +1,17 @@
 import React from 'react';
-import { Socket } from 'socket.io-client';
 
 import Cell from '../Cell/Cell';
-import { BOARD_SIZE } from '../../consts';
-import { CellType, Player, StoneType } from '../../types';
+import { BOARD_SIZE, USER_ID_KEY } from '../../consts';
+import { CellType, GameData, MessageType, Move, StoneType } from '../../types';
 import { range } from '../../utils';
+import { useSocket } from '../../contexts/SocketContext';
 
 import styles from './Board.module.css';
+import { useReadLocalStorage } from 'usehooks-ts';
 
 export interface BoardProps {
-  player: Player;
+  game: GameData;
   size: number;
-  socket: Socket;
 }
 
 const starPoints = [
@@ -31,13 +31,49 @@ function isStar(row: number, col: number) {
   return false;
 }
 
-export default function Board({ player, size, socket }: BoardProps) {
+export default function Board({ game, size }: BoardProps) {
   const [board, setBoard] = React.useState<(StoneType | '')[][]>(emptyBoard);
+  const socket = useSocket();
+  const userId = useReadLocalStorage<string>(USER_ID_KEY);
+  const me = game.players.find((player) => player.userId === userId);
 
-  function handlePlaceStone(row: number, col: number) {
+  const handleOpponentMove = React.useCallback(
+    (move: Move) => {
+      const [row, col] = move.position;
+      const nextBoard = structuredClone(board);
+      nextBoard[row][col] = move.player.color;
+      setBoard(nextBoard);
+    },
+    [board]
+  );
+
+  React.useEffect(() => {
+    socket.emit(MessageType.JOIN_ROOM, game.code);
+    socket.on(MessageType.PLACE_STONE, (move) => handleOpponentMove(move));
+    return () => {
+      socket.off();
+    };
+  }, [socket, game.code, handleOpponentMove]);
+
+  if (!me) {
+    throw new Error('Player not found');
+  }
+
+  function handleMyMove(row: number, col: number) {
     const nextBoard = structuredClone(board);
-    nextBoard[row][col] = player.color;
+    nextBoard[row][col] = me!.color;
     setBoard(nextBoard);
+
+    const move = {
+      player: me,
+      position: [row, col],
+    };
+
+    socket.emit(MessageType.PLACE_STONE, {
+      code: game.code,
+      move,
+    });
+    // TODO: handle failure
   }
 
   return (
@@ -50,7 +86,7 @@ export default function Board({ player, size, socket }: BoardProps) {
                 <Cell
                   type={CellType.TOP_LEFT_CORNER}
                   key={`${rowIndex}:${colIndex}`}
-                  handlePlaceStone={() => handlePlaceStone(rowIndex, colIndex)}
+                  handleMove={() => handleMyMove(rowIndex, colIndex)}
                   occupied={board[rowIndex][colIndex]}
                 />
               );
@@ -59,7 +95,7 @@ export default function Board({ player, size, socket }: BoardProps) {
                 <Cell
                   type={CellType.TOP_RIGHT_CORNER}
                   key={`${rowIndex}:${colIndex}`}
-                  handlePlaceStone={() => handlePlaceStone(rowIndex, colIndex)}
+                  handleMove={() => handleMyMove(rowIndex, colIndex)}
                   occupied={board[rowIndex][colIndex]}
                 />
               );
@@ -68,7 +104,7 @@ export default function Board({ player, size, socket }: BoardProps) {
                 <Cell
                   type={CellType.BOTTOM_LEFT_CORNER}
                   key={`${rowIndex}:${colIndex}`}
-                  handlePlaceStone={() => handlePlaceStone(rowIndex, colIndex)}
+                  handleMove={() => handleMyMove(rowIndex, colIndex)}
                   occupied={board[rowIndex][colIndex]}
                 />
               );
@@ -77,7 +113,7 @@ export default function Board({ player, size, socket }: BoardProps) {
                 <Cell
                   type={CellType.BOTTOM_RIGHT_CORNER}
                   key={`${rowIndex}:${colIndex}`}
-                  handlePlaceStone={() => handlePlaceStone(rowIndex, colIndex)}
+                  handleMove={() => handleMyMove(rowIndex, colIndex)}
                   occupied={board[rowIndex][colIndex]}
                 />
               );
@@ -86,7 +122,7 @@ export default function Board({ player, size, socket }: BoardProps) {
                 <Cell
                   type={CellType.TOP_EDGE}
                   key={`${rowIndex}:${colIndex}`}
-                  handlePlaceStone={() => handlePlaceStone(rowIndex, colIndex)}
+                  handleMove={() => handleMyMove(rowIndex, colIndex)}
                   occupied={board[rowIndex][colIndex]}
                 />
               );
@@ -95,7 +131,7 @@ export default function Board({ player, size, socket }: BoardProps) {
                 <Cell
                   type={CellType.BOTTOM_EDGE}
                   key={`${rowIndex}:${colIndex}`}
-                  handlePlaceStone={() => handlePlaceStone(rowIndex, colIndex)}
+                  handleMove={() => handleMyMove(rowIndex, colIndex)}
                   occupied={board[rowIndex][colIndex]}
                 />
               );
@@ -104,7 +140,7 @@ export default function Board({ player, size, socket }: BoardProps) {
                 <Cell
                   type={CellType.LEFT_EDGE}
                   key={`${rowIndex}:${colIndex}`}
-                  handlePlaceStone={() => handlePlaceStone(rowIndex, colIndex)}
+                  handleMove={() => handleMyMove(rowIndex, colIndex)}
                   occupied={board[rowIndex][colIndex]}
                 />
               );
@@ -113,7 +149,7 @@ export default function Board({ player, size, socket }: BoardProps) {
                 <Cell
                   type={CellType.RIGHT_EDGE}
                   key={`${rowIndex}:${colIndex}`}
-                  handlePlaceStone={() => handlePlaceStone(rowIndex, colIndex)}
+                  handleMove={() => handleMyMove(rowIndex, colIndex)}
                   occupied={board[rowIndex][colIndex]}
                 />
               );
@@ -123,7 +159,7 @@ export default function Board({ player, size, socket }: BoardProps) {
                   type={CellType.MIDDLE}
                   isStar={isStar(rowIndex, colIndex)}
                   key={`${rowIndex}:${colIndex}`}
-                  handlePlaceStone={() => handlePlaceStone(rowIndex, colIndex)}
+                  handleMove={() => handleMyMove(rowIndex, colIndex)}
                   occupied={board[rowIndex][colIndex]}
                 />
               );

@@ -43,7 +43,9 @@ io.on('connection', (socket) => {
   console.log(`client connection: socket ${socket.id}`);
 
   socket.onAny((event: string, payload) => {
-    console.log(`message received: ${event}, ${payload}`);
+    console.log(
+      `message received: ${event}, ${JSON.stringify(payload, null, 2)}`
+    );
     socketHandler.handleMessage(socket, { type: event, payload });
   });
 });
