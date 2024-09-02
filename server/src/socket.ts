@@ -1,6 +1,6 @@
 import { Server, Socket } from 'socket.io';
 
-import { MessageType, SocketMessage } from './types.js';
+import { MessageType, SocketMessage, StoneType } from './types.js';
 import { Game } from './db.js';
 
 export default class SocketHandler {
@@ -29,8 +29,16 @@ export default class SocketHandler {
         const game = await Game.findOne({ code });
         if (game) {
           game.moves.push(move);
+          game.turn =
+            game.turn === StoneType.BLACK ? StoneType.WHITE : StoneType.BLACK;
           await game.save();
           socket.broadcast.to(code).emit(MessageType.PLACE_STONE, move);
+          this.io.to(code).emit(MessageType.SYNC_GAME, {
+            code: game.code,
+            players: game.players,
+            status: game.status,
+            turn: game.turn,
+          });
         }
         break;
       }

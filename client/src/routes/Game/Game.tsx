@@ -78,15 +78,22 @@ export default function Game() {
     });
   }, []);
 
+  const handleSyncGame = React.useCallback((data: Omit<GameData, 'moves'>) => {
+    setGame((currGame: GameData) => {
+      const nextGame = Object.assign({}, currGame, data);
+      return nextGame;
+    });
+  }, []);
+
   React.useEffect(() => {
     socket.emit(MessageType.JOIN_GAME, { code: game.code });
     // TODO: don't sync moves
-    socket.on(MessageType.SYNC_GAME, (data: GameData) => setGame(data));
+    socket.on(MessageType.SYNC_GAME, (data) => handleSyncGame(data));
     socket.on(MessageType.PLACE_STONE, (move) => handleOpponentMove(move));
     return () => {
       socket.off();
     };
-  }, [socket, game.code, handleOpponentMove]);
+  }, [socket, game.code, handleSyncGame, handleOpponentMove]);
 
   return (
     <div>
