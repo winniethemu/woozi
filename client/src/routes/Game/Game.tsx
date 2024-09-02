@@ -45,10 +45,14 @@ export default function Game() {
     nextBoard[row][col] = me!.color;
     setBoard(nextBoard);
 
-    const move = {
+    const move: Move = {
       player: me,
       position: [row, col],
     };
+
+    const nextGame = structuredClone(game);
+    nextGame.moves.push(move);
+    setGame(nextGame);
 
     socket.emit(MessageType.PLACE_STONE, {
       code: game.code,
@@ -63,6 +67,11 @@ export default function Game() {
       const nextBoard = structuredClone(currBoard);
       nextBoard[row][col] = move.player.color;
       return nextBoard;
+    });
+    setGame((currGame: GameData) => {
+      const nextGame = structuredClone(currGame);
+      nextGame.moves.push(move);
+      return nextGame;
     });
   }, []);
 
