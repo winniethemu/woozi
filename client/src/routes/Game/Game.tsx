@@ -42,7 +42,7 @@ export default function Game() {
 
   const handleMyMove = (row: number, col: number) => {
     // TODO: visual indication?
-    if (board[row][col] !== '') return;
+    if (board[row][col] !== '' || game.turn !== me.color) return;
 
     const nextBoard = structuredClone(board);
     nextBoard[row][col] = me!.color;
