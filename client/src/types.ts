@@ -4,6 +4,8 @@ export interface SocketContextType {
   socket: Socket;
 }
 
+export type GameBoard = Array<Array<StoneType | ''>>;
+
 export enum MessageType {
   JOIN_ROOM = 'JOIN_ROOM',
   PLACE_STONE = 'PLACE_STONE',
