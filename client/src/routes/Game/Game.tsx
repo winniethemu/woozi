@@ -87,7 +87,6 @@ export default function Game() {
 
   React.useEffect(() => {
     socket.emit(MessageType.JOIN_GAME, { code: game.code });
-    // TODO: don't sync moves
     socket.on(MessageType.SYNC_GAME, (data) => handleSyncGame(data));
     socket.on(MessageType.PLACE_STONE, (move) => handleOpponentMove(move));
     return () => {
