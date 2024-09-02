@@ -51,4 +51,5 @@ export interface GameData {
   players: Player[];
   moves: Move[];
   status: GameStatus;
+  turn: StoneType;
 }

@@ -41,6 +41,9 @@ export default function Game() {
   };
 
   const handleMyMove = (row: number, col: number) => {
+    // TODO: visual indication?
+    if (board[row][col] !== '') return;
+
     const nextBoard = structuredClone(board);
     nextBoard[row][col] = me!.color;
     setBoard(nextBoard);
@@ -77,6 +80,7 @@ export default function Game() {
 
   React.useEffect(() => {
     socket.emit(MessageType.JOIN_GAME, { code: game.code });
+    // TODO: don't sync moves
     socket.on(MessageType.SYNC_GAME, (data: GameData) => setGame(data));
     socket.on(MessageType.PLACE_STONE, (move) => handleOpponentMove(move));
     return () => {
@@ -86,7 +90,9 @@ export default function Game() {
 
   return (
     <div>
-      <Text>Welcome to the game {state.code}!</Text>
+      <Text as="p">Welcome to the game {state.code}!</Text>
+      <Text as="p">You're playing {me.color}</Text>
+      <Text as="p">Current turn: {game.turn}</Text>
       <Board data={board} handleMyMove={handleMyMove} />
       {createPortal(
         <Dialog.Root open={showShareCodeModal}>
