@@ -25,7 +25,7 @@ app.use(cors({ origin: CLIENT_ROOT }));
 app.use('/api', apiRouter);
 
 // Socket server
-const io = new SocketServer(server, {
+export const io = new SocketServer(server, {
   cors: { origin: CLIENT_ROOT },
 });
 const socketHandler = new SocketHandler(io);

@@ -2,13 +2,14 @@ import express from 'express';
 import mongoose from 'mongoose';
 
 import { User, Game } from './db.js';
+import { GameStatus, MessageType, StoneType } from './types.js';
 import {
   createGameCode,
   isParticipant,
   missingOpponent,
   randomColor,
 } from './utils.js';
-import { GameStatus, StoneType } from './types.js';
+import { io } from './index.js';
 
 const router = express.Router();
 
@@ -121,8 +122,10 @@ router.post(
       game.players.push(player);
       game.status = GameStatus.PLAYING;
       await game.save();
+
+      io.to(game.code).emit(MessageType.SYNC_GAME, game);
+
       res.status(200).json(game);
-      // TODO: notify other player game has started
     } catch (err) {
       console.error(err);
       res.sendStatus(500);

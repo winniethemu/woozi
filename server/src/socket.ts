@@ -19,8 +19,9 @@ export default class SocketHandler {
     // TODO: granular message format validation?
 
     switch (message.type) {
-      case MessageType.JOIN_ROOM: {
-        socket.join(message.payload);
+      case MessageType.JOIN_GAME: {
+        const { code } = message.payload;
+        socket.join(code);
         break;
       }
       case MessageType.PLACE_STONE: {
@@ -29,7 +30,7 @@ export default class SocketHandler {
         if (game) {
           game.moves.push(move);
           await game.save();
-          socket.to(code).emit(MessageType.PLACE_STONE, move);
+          socket.broadcast.to(code).emit(MessageType.PLACE_STONE, move);
         }
         break;
       }

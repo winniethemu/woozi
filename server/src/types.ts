@@ -1,9 +1,10 @@
 import { Document, Types } from 'mongoose';
 
 export enum MessageType {
-  SET_USER = 'SET_USER',
-  JOIN_ROOM = 'JOIN_ROOM',
+  JOIN_GAME = 'JOIN_GAME',
   PLACE_STONE = 'PLACE_STONE',
+  SET_USER = 'SET_USER',
+  SYNC_GAME = 'SYNC_GAME',
 }
 
 export enum GameStatus {

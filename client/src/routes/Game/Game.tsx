@@ -67,7 +67,8 @@ export default function Game() {
   }, []);
 
   React.useEffect(() => {
-    socket.emit(MessageType.JOIN_ROOM, game.code);
+    socket.emit(MessageType.JOIN_GAME, { code: game.code });
+    socket.on(MessageType.SYNC_GAME, (data: GameData) => setGame(data));
     socket.on(MessageType.PLACE_STONE, (move) => handleOpponentMove(move));
     return () => {
       socket.off();

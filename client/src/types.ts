@@ -7,9 +7,10 @@ export interface SocketContextType {
 export type GameBoard = Array<Array<StoneType | ''>>;
 
 export enum MessageType {
-  JOIN_ROOM = 'JOIN_ROOM',
+  JOIN_GAME = 'JOIN_GAME',
   PLACE_STONE = 'PLACE_STONE',
   SET_USER = 'SET_USER',
+  SYNC_GAME = 'SYNC_GAME',
 }
 
 export enum CellType {
