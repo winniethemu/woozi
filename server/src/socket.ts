@@ -22,25 +22,24 @@ export default class SocketHandler {
       case MessageType.JOIN_GAME: {
         const { code } = message.payload;
         socket.join(code);
-        break;
+        return;
       }
       case MessageType.PLACE_STONE: {
         const { code, move } = message.payload;
         const game = await Game.findOne({ code });
-        if (game) {
-          game.moves.push(move);
-          game.turn =
-            game.turn === StoneType.BLACK ? StoneType.WHITE : StoneType.BLACK;
-          await game.save();
-          socket.broadcast.to(code).emit(MessageType.PLACE_STONE, move);
-          this.io.to(code).emit(MessageType.SYNC_GAME, {
-            code: game.code,
-            players: game.players,
-            status: game.status,
-            turn: game.turn,
-          });
-        }
-        break;
+        if (!game) return;
+        game.moves.push(move);
+        game.turn =
+          game.turn === StoneType.BLACK ? StoneType.WHITE : StoneType.BLACK;
+        await game.save();
+        socket.broadcast.to(code).emit(MessageType.PLACE_STONE, move);
+        this.io.to(code).emit(MessageType.SYNC_GAME, {
+          code: game.code,
+          players: game.players,
+          status: game.status,
+          turn: game.turn,
+        });
+        return;
       }
     }
   }

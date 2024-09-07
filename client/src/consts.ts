@@ -3,3 +3,4 @@ export const USER_ID_KEY = 'wzUserId';
 export const USER_NAME_KEY = 'wzUserName';
 export const BOARD_SIZE = 15;
 export const CELL_SIZE = 40;
+export const TIME_TO_MOVE = 30;

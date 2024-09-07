@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { Box, Button, Dialog, Flex, Text, TextField } from '@radix-ui/themes';
 import { useCopyToClipboard, useReadLocalStorage } from 'usehooks-ts';
 
-import { BOARD_SIZE, USER_ID_KEY } from '../../consts';
+import { BOARD_SIZE, TIME_TO_MOVE, USER_ID_KEY } from '../../consts';
 import { Board } from '../../components';
 import {
   GameBoard,
@@ -26,6 +26,8 @@ export default function Game() {
   const [showShareCodeModal, setShowShareCodeModal] = React.useState(
     game.status === GameStatus.PENDING
   );
+  const [, setCountdown] = React.useState<number>(TIME_TO_MOVE);
+  const timerRef = React.useRef<number>();
   const [, copy] = useCopyToClipboard();
   const socket = useSocket();
   const userId = useReadLocalStorage<string>(USER_ID_KEY);
@@ -43,6 +45,12 @@ export default function Game() {
   const handleMyMove = (row: number, col: number) => {
     // TODO: visual indication?
     if (board[row][col] !== '' || game.turn !== me.color) return;
+
+    // Reset the timer
+    if (timerRef.current) {
+      setCountdown(TIME_TO_MOVE);
+      clearInterval(timerRef.current);
+    }
 
     const nextBoard = structuredClone(board);
     nextBoard[row][col] = me!.color;
@@ -76,6 +84,19 @@ export default function Game() {
       nextGame.moves.push(move);
       return nextGame;
     });
+
+    timerRef.current = setInterval(() => {
+      setCountdown((currValue) => {
+        console.log(currValue);
+        if (currValue < 1) {
+          setGame({ ...game, status: GameStatus.COMPLETED });
+          console.log('Timer expired, you have lost!');
+          clearInterval(timerRef.current);
+          // TODO: Update server
+        }
+        return currValue - 1;
+      });
+    }, 1000);
   }, []);
 
   const handleSyncGame = React.useCallback((data: Omit<GameData, 'moves'>) => {
