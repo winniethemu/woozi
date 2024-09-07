@@ -26,7 +26,7 @@ export default function Game() {
   const [showShareCodeModal, setShowShareCodeModal] = React.useState(
     game.status === GameStatus.PENDING
   );
-  const [, setCountdown] = React.useState<number>(TIME_TO_MOVE);
+  const [countdown, setCountdown] = React.useState<number>(TIME_TO_MOVE);
   const timerRef = React.useRef<number>();
   const [, copy] = useCopyToClipboard();
   const socket = useSocket();
@@ -87,7 +87,6 @@ export default function Game() {
 
     timerRef.current = setInterval(() => {
       setCountdown((currValue) => {
-        console.log(currValue);
         if (currValue < 1) {
           setGame({ ...game, status: GameStatus.COMPLETED });
           console.log('Timer expired, you have lost!');
@@ -120,6 +119,7 @@ export default function Game() {
       <Text as="p">Welcome to the game {state.code}!</Text>
       <Text as="p">You're playing {me.color}</Text>
       <Text as="p">Current turn: {game.turn}</Text>
+      <Text as="p">Time to move: {countdown}</Text>
       <Board data={board} handleMyMove={handleMyMove} />
       {createPortal(
         <Dialog.Root open={showShareCodeModal}>
