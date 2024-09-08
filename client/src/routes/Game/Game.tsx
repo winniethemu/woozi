@@ -26,8 +26,11 @@ export default function Game() {
   const [showShareCodeModal, setShowShareCodeModal] = React.useState(
     game.status === GameStatus.PENDING
   );
-  const [countdown, setCountdown] = React.useState<number>(TIME_TO_MOVE);
-  const timerRef = React.useRef<number>();
+  const [clock, setClock] = React.useState<[number, number]>([
+    TIME_TO_MOVE, // my clock
+    TIME_TO_MOVE, // opponent's clock
+  ]);
+  // const timerRef = React.useRef<number>();
   const [, copy] = useCopyToClipboard();
   const socket = useSocket();
   const userId = useReadLocalStorage<string>(USER_ID_KEY);
@@ -47,10 +50,10 @@ export default function Game() {
     if (board[row][col] !== '' || game.turn !== me.color) return;
 
     // Reset the timer
-    if (timerRef.current) {
-      setCountdown(TIME_TO_MOVE);
-      clearInterval(timerRef.current);
-    }
+    // if (timerRef.current) {
+    //   setClock([TIME_TO_MOVE, TIME_TO_MOVE]);
+    //   clearInterval(timerRef.current);
+    // }
 
     const nextBoard = structuredClone(board);
     nextBoard[row][col] = me!.color;
@@ -85,17 +88,17 @@ export default function Game() {
       return nextGame;
     });
 
-    timerRef.current = setInterval(() => {
-      setCountdown((currValue) => {
-        if (currValue < 1) {
-          setGame({ ...game, status: GameStatus.COMPLETED });
-          console.log('Timer expired, you have lost!');
-          clearInterval(timerRef.current);
-          // TODO: Update server
-        }
-        return currValue - 1;
-      });
-    }, 1000);
+    // timerRef.current = setInterval(() => {
+    //   // TODO: Update server
+    //   setCountdown((currValue) => {
+    //     if (currValue < 1) {
+    //       setGame({ ...game, status: GameStatus.COMPLETED });
+    //       clearInterval(timerRef.current);
+    //       return 0;
+    //     }
+    //     return currValue - 1;
+    //   });
+    // }, 1000);
   }, []);
 
   const handleSyncGame = React.useCallback((data: Omit<GameData, 'moves'>) => {
@@ -109,6 +112,14 @@ export default function Game() {
     socket.emit(MessageType.JOIN_GAME, { code: game.code });
     socket.on(MessageType.SYNC_GAME, (data) => handleSyncGame(data));
     socket.on(MessageType.PLACE_STONE, (move) => handleOpponentMove(move));
+    socket.on(MessageType.TIMER_COUNTDOWN, () => {
+      if (game.turn === me.color) {
+        setClock((curr) => [curr[0] - 1, TIME_TO_MOVE]);
+      } else {
+        setClock((curr) => [TIME_TO_MOVE, curr[1] - 1]);
+      }
+    });
+    // TODO: kick off initial countdown
     return () => {
       socket.off();
     };
@@ -119,7 +130,8 @@ export default function Game() {
       <Text as="p">Welcome to the game {state.code}!</Text>
       <Text as="p">You're playing {me.color}</Text>
       <Text as="p">Current turn: {game.turn}</Text>
-      <Text as="p">Time to move: {countdown}</Text>
+      <Text as="p">Your clock: {clock[0]}</Text>
+      <Text as="p">Opponent's clock: {clock[1]}</Text>
       <Board data={board} handleMyMove={handleMyMove} />
       {createPortal(
         <Dialog.Root open={showShareCodeModal}>
