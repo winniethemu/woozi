@@ -30,7 +30,7 @@ export default function Game() {
     TIME_TO_MOVE, // my clock
     TIME_TO_MOVE, // opponent's clock
   ]);
-  // const timerRef = React.useRef<number>();
+  const timerRef = React.useRef<number>();
   const [, copy] = useCopyToClipboard();
   const socket = useSocket();
   const userId = useReadLocalStorage<string>(USER_ID_KEY);
@@ -50,10 +50,10 @@ export default function Game() {
     if (board[row][col] !== '' || game.turn !== me.color) return;
 
     // Reset the timer
-    // if (timerRef.current) {
-    //   setClock([TIME_TO_MOVE, TIME_TO_MOVE]);
-    //   clearInterval(timerRef.current);
-    // }
+    if (timerRef.current) {
+      setClock([TIME_TO_MOVE, TIME_TO_MOVE]);
+      clearInterval(timerRef.current);
+    }
 
     const nextBoard = structuredClone(board);
     nextBoard[row][col] = me!.color;
@@ -76,6 +76,12 @@ export default function Game() {
   };
 
   const handleOpponentMove = React.useCallback((move: Move) => {
+    // Reset the timer
+    if (timerRef.current) {
+      setClock([TIME_TO_MOVE, TIME_TO_MOVE]);
+      clearInterval(timerRef.current);
+    }
+
     const [row, col] = move.position;
     setBoard((currBoard: (StoneType | '')[][]) => {
       const nextBoard = structuredClone(currBoard);
@@ -87,21 +93,19 @@ export default function Game() {
       nextGame.moves.push(move);
       return nextGame;
     });
-
-    // timerRef.current = setInterval(() => {
-    //   // TODO: Update server
-    //   setCountdown((currValue) => {
-    //     if (currValue < 1) {
-    //       setGame({ ...game, status: GameStatus.COMPLETED });
-    //       clearInterval(timerRef.current);
-    //       return 0;
-    //     }
-    //     return currValue - 1;
-    //   });
-    // }, 1000);
   }, []);
 
   const handleSyncGame = React.useCallback((data: Omit<GameData, 'moves'>) => {
+    timerRef.current = setInterval(() => {
+      setClock((currClock) => {
+        if (data.turn === me.color) {
+          return [currClock[0] - 1, currClock[1]];
+        } else {
+          return [currClock[0], currClock[1] - 1];
+        }
+      });
+    }, 1000);
+
     setGame((currGame: GameData) => {
       const nextGame = Object.assign({}, currGame, data);
       return nextGame;
@@ -112,13 +116,6 @@ export default function Game() {
     socket.emit(MessageType.JOIN_GAME, { code: game.code });
     socket.on(MessageType.SYNC_GAME, (data) => handleSyncGame(data));
     socket.on(MessageType.PLACE_STONE, (move) => handleOpponentMove(move));
-    socket.on(MessageType.TIMER_COUNTDOWN, () => {
-      if (game.turn === me.color) {
-        setClock((curr) => [curr[0] - 1, TIME_TO_MOVE]);
-      } else {
-        setClock((curr) => [TIME_TO_MOVE, curr[1] - 1]);
-      }
-    });
     // TODO: kick off initial countdown
     return () => {
       socket.off();

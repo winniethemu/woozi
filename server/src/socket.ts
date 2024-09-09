@@ -2,14 +2,13 @@ import { Server, Socket } from 'socket.io';
 
 import { MessageType, SocketMessage, StoneType } from './types.js';
 import { Game } from './db.js';
+import { TIME_TO_MOVE } from './consts.js';
 
 export default class SocketHandler {
   io: Server;
-  timer: ReturnType<typeof setInterval> | number;
 
   constructor(io: Server) {
     this.io = io;
-    this.timer = 0;
   }
 
   async handleMessage(socket: Socket, message: SocketMessage) {
@@ -26,8 +25,6 @@ export default class SocketHandler {
         return;
       }
       case MessageType.PLACE_STONE: {
-        clearInterval(this.timer);
-
         const { code, move } = message.payload;
         const game = await Game.findOne({ code });
         if (!game) return;
@@ -38,17 +35,13 @@ export default class SocketHandler {
           game.turn === StoneType.BLACK ? StoneType.WHITE : StoneType.BLACK;
         await game.save();
 
-        // set up clock
-        this.timer = setInterval(() => {
-          this.io.to(code).emit(MessageType.TIMER_COUNTDOWN);
-        }, 1000);
-
         // communicate to clients
         socket.broadcast.to(code).emit(MessageType.PLACE_STONE, move);
         this.io.to(code).emit(MessageType.SYNC_GAME, {
           code: game.code,
           players: game.players,
           status: game.status,
+          ts: Date.now(),
           turn: game.turn,
         });
         return;
