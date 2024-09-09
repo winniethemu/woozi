@@ -39,6 +39,13 @@ export default function Game() {
     throw new Error('Player not found');
   }
 
+  const resetClock = () => {
+    if (timerRef.current) {
+      setClock([TIME_TO_MOVE, TIME_TO_MOVE]);
+      clearInterval(timerRef.current);
+    }
+  };
+
   const handleCopyCode = () => {
     copy(state.code).then(() => {
       setShowShareCodeModal(false);
@@ -49,11 +56,7 @@ export default function Game() {
     // TODO: visual indication?
     if (board[row][col] !== '' || game.turn !== me.color) return;
 
-    // Reset the timer
-    if (timerRef.current) {
-      setClock([TIME_TO_MOVE, TIME_TO_MOVE]);
-      clearInterval(timerRef.current);
-    }
+    resetClock();
 
     const nextBoard = structuredClone(board);
     nextBoard[row][col] = me!.color;
@@ -76,11 +79,7 @@ export default function Game() {
   };
 
   const handleOpponentMove = React.useCallback((move: Move) => {
-    // Reset the timer
-    if (timerRef.current) {
-      setClock([TIME_TO_MOVE, TIME_TO_MOVE]);
-      clearInterval(timerRef.current);
-    }
+    resetClock();
 
     const [row, col] = move.position;
     setBoard((currBoard: (StoneType | '')[][]) => {
