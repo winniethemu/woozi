@@ -97,8 +97,9 @@ export default function Game() {
   const handleSyncGame = React.useCallback(
     (data: Omit<GameData, 'moves'>) => {
       if (data.status === GameStatus.COMPLETED) {
-        console.log(`Game over, ${data.winner!.color} won!`);
         resetClock();
+        // TODO: redirect to a different page
+        console.log(`Game over, ${data.winner!.color} won!`);
         return;
       }
 
