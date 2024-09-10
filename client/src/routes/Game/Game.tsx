@@ -94,22 +94,37 @@ export default function Game() {
     });
   }, []);
 
-  const handleSyncGame = React.useCallback((data: Omit<GameData, 'moves'>) => {
-    timerRef.current = setInterval(() => {
-      setClock((currClock) => {
-        if (data.turn === me.color) {
-          return [currClock[0] - 1, currClock[1]];
-        } else {
-          return [currClock[0], currClock[1] - 1];
-        }
-      });
-    }, 1000);
+  const handleSyncGame = React.useCallback(
+    (data: Omit<GameData, 'moves'>) => {
+      if (data.status === GameStatus.COMPLETED) {
+        console.log(`Game over, ${data.winner!.color} won!`);
+        resetClock();
+        return;
+      }
 
-    setGame((currGame: GameData) => {
-      const nextGame = Object.assign({}, currGame, data);
-      return nextGame;
-    });
-  }, []);
+      timerRef.current = setInterval(() => {
+        setClock((currClock) => {
+          if (data.turn === me.color) {
+            if (currClock[0] - 1 <= 0) {
+              socket.emit(MessageType.TIME_OUT, {
+                player: me,
+                game,
+              });
+            }
+            return [currClock[0] - 1, currClock[1]];
+          } else {
+            return [currClock[0], currClock[1] - 1];
+          }
+        });
+      }, 1000);
+
+      setGame((currGame: GameData) => {
+        const nextGame = Object.assign({}, currGame, data);
+        return nextGame;
+      });
+    },
+    [game, me, socket]
+  );
 
   React.useEffect(() => {
     socket.emit(MessageType.JOIN_GAME, { code: game.code });

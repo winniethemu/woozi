@@ -11,6 +11,7 @@ export enum MessageType {
   PLACE_STONE = 'PLACE_STONE',
   SET_USER = 'SET_USER',
   SYNC_GAME = 'SYNC_GAME',
+  TIME_OUT = 'TIME_OUT',
 }
 
 export enum CellType {
@@ -53,4 +54,5 @@ export interface GameData {
   status: GameStatus;
   ts: number; // timestamp of last move
   turn: StoneType;
+  winner?: Player;
 }

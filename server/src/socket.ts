@@ -1,8 +1,13 @@
 import { Server, Socket } from 'socket.io';
 
-import { MessageType, SocketMessage, StoneType } from './types.js';
+import {
+  GameStatus,
+  MessageType,
+  Player,
+  SocketMessage,
+  StoneType,
+} from './types.js';
 import { Game } from './db.js';
-import { TIME_TO_MOVE } from './consts.js';
 
 export default class SocketHandler {
   io: Server;
@@ -43,6 +48,19 @@ export default class SocketHandler {
           status: game.status,
           ts: Date.now(),
           turn: game.turn,
+        });
+        return;
+      }
+      case MessageType.TIME_OUT: {
+        const { player, game } = message.payload;
+        const winner = game.players.filter(
+          (p: Player) => p.color !== player.color
+        )[0];
+        await Game.deleteOne({ code: game.code });
+        this.io.to(game.code).emit(MessageType.SYNC_GAME, {
+          ...game,
+          status: GameStatus.COMPLETED,
+          winner,
         });
         return;
       }
