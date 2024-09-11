@@ -26,6 +26,7 @@ export default function Game() {
   const [showShareCodeModal, setShowShareCodeModal] = React.useState(
     game.status === GameStatus.PENDING
   );
+  const [showUndoModal, setShowUndoModal] = React.useState(false);
   const [clock, setClock] = React.useState<[number, number]>([
     TIME_TO_MOVE, // my clock
     TIME_TO_MOVE, // opponent's clock
@@ -131,6 +132,7 @@ export default function Game() {
     socket.emit(MessageType.JOIN_GAME, { code: game.code });
     socket.on(MessageType.SYNC_GAME, (data) => handleSyncGame(data));
     socket.on(MessageType.PLACE_STONE, (move) => handleOpponentMove(move));
+    socket.on(MessageType.REQUEST_UNDO, () => setShowUndoModal(true));
     // TODO: kick off initial countdown
     return () => {
       socket.off();
@@ -144,6 +146,17 @@ export default function Game() {
       <Text as="p">Current turn: {game.turn}</Text>
       <Text as="p">Your clock: {clock[0]}</Text>
       <Text as="p">Opponent's clock: {clock[1]}</Text>
+      <button
+        style={{ margin: '5px 0' }}
+        onClick={() =>
+          socket.emit(MessageType.REQUEST_UNDO, {
+            code: game.code,
+          })
+        }
+        disabled={game.turn === me.color || game.moves.length < 1}
+      >
+        Undo Move
+      </button>
       <Board data={board} handleMyMove={handleMyMove} />
       {createPortal(
         <Dialog.Root open={showShareCodeModal}>
@@ -158,6 +171,27 @@ export default function Game() {
               </Box>
               <Button onClick={handleCopyCode}>Copy</Button>
             </Flex>
+          </Dialog.Content>
+        </Dialog.Root>,
+        document.body
+      )}
+      {createPortal(
+        <Dialog.Root open={showUndoModal}>
+          <Dialog.Content maxWidth="450px">
+            <Dialog.Title>Takeback Last Move</Dialog.Title>
+            <Dialog.Description size="2" mb="4">
+              The opponent has requested to take back the last move.
+            </Dialog.Description>
+            <Button
+              onClick={() =>
+                socket.emit(MessageType.CONFIRM_UNDO, {
+                  code: game.code,
+                })
+              }
+            >
+              Agree
+            </Button>
+            <Button onClick={() => setShowUndoModal(false)}>Deny</Button>
           </Dialog.Content>
         </Dialog.Root>,
         document.body

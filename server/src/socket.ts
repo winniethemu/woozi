@@ -32,7 +32,10 @@ export default class SocketHandler {
       case MessageType.PLACE_STONE: {
         const { code, move } = message.payload;
         const game = await Game.findOne({ code });
-        if (!game) return;
+        if (!game) {
+          console.error(`Game ${code} not found`);
+          return;
+        }
 
         // update game
         game.moves.push(move);
@@ -62,6 +65,21 @@ export default class SocketHandler {
           status: GameStatus.COMPLETED,
           winner,
         });
+        return;
+      }
+      case MessageType.REQUEST_UNDO: {
+        const { code } = message.payload;
+        // forward request to opponent
+        socket.broadcast.to(code).emit(MessageType.REQUEST_UNDO);
+        return;
+      }
+      case MessageType.CONFIRM_UNDO: {
+        const { code } = message.payload;
+        const game = await Game.findOne({ code });
+        if (!game) {
+          console.error(`Game ${code} not found`);
+          return;
+        }
         return;
       }
     }
