@@ -127,7 +127,6 @@ router.post(
         code: game.code,
         players: game.players,
         status: game.status,
-        ts: Date.now(),
         turn: game.turn,
       });
 

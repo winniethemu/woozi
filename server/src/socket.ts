@@ -1,13 +1,8 @@
 import { Server, Socket } from 'socket.io';
 
-import {
-  GameStatus,
-  MessageType,
-  Player,
-  SocketMessage,
-  StoneType,
-} from './types.js';
+import { GameStatus, MessageType, Player, SocketMessage } from './types.js';
 import { Game } from './db.js';
+import { flipTurn } from './utils.js';
 
 export default class SocketHandler {
   io: Server;
@@ -39,8 +34,7 @@ export default class SocketHandler {
 
         // update game
         game.moves.push(move);
-        game.turn =
-          game.turn === StoneType.BLACK ? StoneType.WHITE : StoneType.BLACK;
+        game.turn = flipTurn(game.turn);
         await game.save();
 
         // communicate to clients
@@ -49,7 +43,6 @@ export default class SocketHandler {
           code: game.code,
           players: game.players,
           status: game.status,
-          ts: Date.now(),
           turn: game.turn,
         });
         return;
@@ -80,6 +73,16 @@ export default class SocketHandler {
           console.error(`Game ${code} not found`);
           return;
         }
+        const move = game.moves.pop();
+        game.turn = flipTurn(game.turn);
+        await game.save();
+        this.io.to(code).emit(MessageType.SYNC_GAME, {
+          code: game.code,
+          players: game.players,
+          moves: game.moves,
+          status: game.status,
+          turn: game.turn,
+        });
         return;
       }
     }

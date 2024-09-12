@@ -28,3 +28,7 @@ export function isParticipant(userId: string, game: IGame) {
 export function missingOpponent(game: IGame) {
   return game.players.length === 1 && game.status === GameStatus.PENDING;
 }
+
+export function flipTurn(turn: StoneType) {
+  return turn === StoneType.BLACK ? StoneType.WHITE : StoneType.BLACK;
+}
