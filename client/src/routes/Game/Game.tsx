@@ -133,6 +133,14 @@ export default function Game() {
     socket.on(MessageType.SYNC_GAME, (data) => handleSyncGame(data));
     socket.on(MessageType.PLACE_STONE, (move) => handleOpponentMove(move));
     socket.on(MessageType.REQUEST_UNDO, () => setShowUndoModal(true));
+    socket.on(MessageType.PERFORM_UNDO, (move) => {
+      setBoard((currBoard) => {
+        const [row, col] = move.position;
+        const nextBoard = structuredClone(currBoard);
+        nextBoard[row][col] = '';
+        return nextBoard;
+      });
+    });
     // TODO: kick off initial countdown
     return () => {
       socket.off();
@@ -183,11 +191,12 @@ export default function Game() {
               The opponent has requested to take back the last move.
             </Dialog.Description>
             <Button
-              onClick={() =>
+              onClick={() => {
                 socket.emit(MessageType.CONFIRM_UNDO, {
                   code: game.code,
-                })
-              }
+                });
+                setShowUndoModal(false);
+              }}
             >
               Agree
             </Button>

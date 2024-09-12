@@ -83,6 +83,7 @@ export default class SocketHandler {
           status: game.status,
           turn: game.turn,
         });
+        this.io.to(code).emit(MessageType.PERFORM_UNDO, move);
         return;
       }
     }

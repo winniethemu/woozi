@@ -9,6 +9,7 @@ export type GameBoard = Array<Array<StoneType | ''>>;
 export enum MessageType {
   CONFIRM_UNDO = 'CONFIRM_UNDO',
   JOIN_GAME = 'JOIN_GAME',
+  PERFORM_UNDO = 'PERFORM_UNDO',
   PLACE_STONE = 'PLACE_STONE',
   REQUEST_UNDO = 'REQUEST_UNDO',
   SET_USER = 'SET_USER',
