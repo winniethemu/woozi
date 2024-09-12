@@ -55,7 +55,6 @@ export interface GameData {
   players: Player[];
   moves: Move[];
   status: GameStatus;
-  ts: number; // timestamp of last move
   turn: StoneType;
   winner?: Player;
 }
