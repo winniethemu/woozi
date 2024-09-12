@@ -156,11 +156,12 @@ export default function Game() {
       <Text as="p">Opponent's clock: {clock[1]}</Text>
       <button
         style={{ margin: '5px 0' }}
-        onClick={() =>
+        onClick={() => {
           socket.emit(MessageType.REQUEST_UNDO, {
             code: game.code,
-          })
-        }
+          });
+          resetClock();
+        }}
         disabled={game.turn === me.color || game.moves.length < 1}
       >
         Undo Move

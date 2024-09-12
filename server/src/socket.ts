@@ -14,7 +14,7 @@ export default class SocketHandler {
   async handleMessage(socket: Socket, message: SocketMessage) {
     // TODO: granular message format validation?
     if (!message.type || !message.payload) {
-      console.error(`bad socket message: ${message}`);
+      console.error(`error: bad socket message: ${message}`);
       return;
     }
 
@@ -28,7 +28,7 @@ export default class SocketHandler {
         const { code, move } = message.payload;
         const game = await Game.findOne({ code });
         if (!game) {
-          console.error(`Game ${code} not found`);
+          console.error(`error: game ${code} not found`);
           return;
         }
 
@@ -70,7 +70,7 @@ export default class SocketHandler {
         const { code } = message.payload;
         const game = await Game.findOne({ code });
         if (!game) {
-          console.error(`Game ${code} not found`);
+          console.error(`error: game ${code} not found`);
           return;
         }
         const move = game.moves.pop();
