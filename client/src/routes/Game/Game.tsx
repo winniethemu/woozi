@@ -160,6 +160,7 @@ export default function Game() {
           socket.emit(MessageType.REQUEST_UNDO, {
             code: game.code,
           });
+          // FIXME: undo breaks timer
           resetClock();
         }}
         disabled={game.turn === me.color || game.moves.length < 1}
@@ -191,17 +192,19 @@ export default function Game() {
             <Dialog.Description size="2" mb="4">
               The opponent has requested to take back the last move.
             </Dialog.Description>
-            <Button
-              onClick={() => {
-                socket.emit(MessageType.CONFIRM_UNDO, {
-                  code: game.code,
-                });
-                setShowUndoModal(false);
-              }}
-            >
-              Agree
-            </Button>
-            <Button onClick={() => setShowUndoModal(false)}>Deny</Button>
+            <Flex direction="row" gap="3">
+              <Button
+                onClick={() => {
+                  socket.emit(MessageType.CONFIRM_UNDO, {
+                    code: game.code,
+                  });
+                  setShowUndoModal(false);
+                }}
+              >
+                Agree
+              </Button>
+              <Button onClick={() => setShowUndoModal(false)}>Deny</Button>
+            </Flex>
           </Dialog.Content>
         </Dialog.Root>,
         document.body
