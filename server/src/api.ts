@@ -123,13 +123,6 @@ router.post(
       game.status = GameStatus.PLAYING;
       await game.save();
 
-      io.to(game.code).emit(MessageType.SYNC_GAME, {
-        code: game.code,
-        players: game.players,
-        status: game.status,
-        turn: game.turn,
-      });
-
       res.status(200).json(game);
     } catch (err) {
       console.error(err);

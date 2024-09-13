@@ -20,8 +20,16 @@ export default class SocketHandler {
 
     switch (message.type) {
       case MessageType.JOIN_GAME: {
-        const { code } = message.payload;
+        const { code, players, status, turn } = message.payload;
         socket.join(code);
+        if (players.length === 2) {
+          this.io.to(code).emit(MessageType.SYNC_GAME, {
+            code,
+            players,
+            status,
+            turn,
+          });
+        }
         return;
       }
       case MessageType.PLACE_STONE: {

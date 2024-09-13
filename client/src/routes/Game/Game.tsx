@@ -97,8 +97,8 @@ export default function Game() {
 
   const handleSyncGame = React.useCallback(
     (data: Omit<GameData, 'moves'>) => {
+      resetClock();
       if (data.status === GameStatus.COMPLETED) {
-        resetClock();
         // TODO: redirect to a different page
         // TODO: send message so server can clean up (e.g. delete game)
         console.log(`Game over, ${data.winner!.color} won!`);
@@ -130,7 +130,10 @@ export default function Game() {
   );
 
   React.useEffect(() => {
-    socket.emit(MessageType.JOIN_GAME, { code: game.code });
+    socket.emit(MessageType.JOIN_GAME, game);
+  }, []);
+
+  React.useEffect(() => {
     socket.on(MessageType.SYNC_GAME, (data) => handleSyncGame(data));
     socket.on(MessageType.PLACE_STONE, (move) => handleOpponentMove(move));
     socket.on(MessageType.REQUEST_UNDO, () => setShowUndoModal(true));
@@ -142,7 +145,6 @@ export default function Game() {
         return nextBoard;
       });
     });
-    // TODO: kick off initial countdown
     return () => {
       socket.off();
     };
