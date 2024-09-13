@@ -188,7 +188,7 @@ export default function Game() {
       {createPortal(
         <Dialog.Root open={showUndoModal}>
           <Dialog.Content maxWidth="450px">
-            <Dialog.Title>Takeback Last Move</Dialog.Title>
+            <Dialog.Title>Takeback Request</Dialog.Title>
             <Dialog.Description size="2" mb="4">
               The opponent has requested to take back the last move.
             </Dialog.Description>
