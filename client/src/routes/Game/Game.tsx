@@ -163,7 +163,6 @@ export default function Game() {
           socket.emit(MessageType.REQUEST_UNDO, {
             code: game.code,
           });
-          // FIXME: undo breaks timer
           resetClock();
         }}
         disabled={game.turn === me.color || game.moves.length < 1}
