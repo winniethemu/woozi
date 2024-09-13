@@ -52,7 +52,6 @@ export default class SocketHandler {
         const winner = game.players.filter(
           (p: Player) => p.color !== player.color
         )[0];
-        await Game.deleteOne({ code: game.code });
         this.io.to(game.code).emit(MessageType.SYNC_GAME, {
           ...game,
           status: GameStatus.COMPLETED,

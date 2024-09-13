@@ -100,6 +100,7 @@ export default function Game() {
       if (data.status === GameStatus.COMPLETED) {
         resetClock();
         // TODO: redirect to a different page
+        // TODO: send message so server can clean up (e.g. delete game)
         console.log(`Game over, ${data.winner!.color} won!`);
         return;
       }
