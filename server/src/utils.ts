@@ -65,13 +65,25 @@ function stretch(board: GameBoard, move: Move, dLo: Vec2, dHi: Vec2): number {
     lo = vadd(lo, dLo);
   }
 
-  while (!outOfBound(vadd(hi, dHi)) && board[hi[0]][hi[1]] === player.color) {
-    hi = vadd(hi, dHi);
+  while (true) {
+    const [nr, nc] = vadd(lo, dLo);
+    if (!outOfBound([nr, nc]) && board[nr][nc] === player.color) {
+      lo = [nr, nc];
+    } else {
+      break;
+    }
   }
 
-  const result = Math.max(Math.abs(lo[0] - hi[0]), Math.abs(lo[1] - hi[1]));
-  console.log('WINNING CHECK: ', result);
-  return result;
+  while (true) {
+    const [nr, nc] = vadd(hi, dHi);
+    if (!outOfBound([nr, nc]) && board[nr][nc] === player.color) {
+      hi = [nr, nc];
+    } else {
+      break;
+    }
+  }
+
+  return Math.max(Math.abs(lo[0] - hi[0]), Math.abs(lo[1] - hi[1]));
 }
 
 function vadd(u: Vec2, v: Vec2): Vec2 {
