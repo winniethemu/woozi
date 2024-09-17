@@ -4,7 +4,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Theme } from '@radix-ui/themes';
 
 import { SocketProvider } from './contexts/SocketContext';
-import { Game, Home } from './routes';
+import { Game, GameOver, Home } from './routes';
 
 import './index.css';
 import '@radix-ui/themes/styles.css';
@@ -17,6 +17,10 @@ const router = createBrowserRouter([
   {
     path: 'games/:code',
     element: <Game />,
+  },
+  {
+    path: 'games/:code/over',
+    element: <GameOver />,
   },
 ]);
 

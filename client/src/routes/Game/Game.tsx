@@ -1,6 +1,6 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Box, Button, Dialog, Flex, Text, TextField } from '@radix-ui/themes';
 import { useCopyToClipboard, useReadLocalStorage } from 'usehooks-ts';
 
@@ -33,6 +33,7 @@ export default function Game() {
   ]);
   const timerRef = React.useRef<number>();
   const [, copy] = useCopyToClipboard();
+  const navigate = useNavigate();
   const socket = useSocket();
   const userId = useReadLocalStorage<string>(USER_ID_KEY);
   const me = game.players.find((player) => player.userId === userId);
@@ -100,9 +101,7 @@ export default function Game() {
     (data: Omit<GameData, 'moves'>) => {
       resetClock();
       if (data.status === GameStatus.COMPLETED) {
-        // TODO: redirect to a different page
-        // TODO: send message so server can clean up (e.g. delete game)
-        console.log(`Game over, ${data.winner!.color} won!`);
+        navigate(`/games/${data.code}/over`, { state: data });
         return;
       }
 
@@ -127,7 +126,7 @@ export default function Game() {
         return nextGame;
       });
     },
-    [game, me, socket]
+    [game, me, navigate, socket]
   );
 
   React.useEffect(() => {
