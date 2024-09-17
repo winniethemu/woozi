@@ -22,6 +22,10 @@ export enum StoneType {
   WHITE = 'white',
 }
 
+export type GameBoard = Array<Array<StoneType | ''>>;
+
+export type Vec2 = [number, number];
+
 export interface IUser extends Document {
   name: string;
 }

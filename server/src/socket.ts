@@ -2,7 +2,7 @@ import { Server, Socket } from 'socket.io';
 
 import { GameStatus, MessageType, Player, SocketMessage } from './types.js';
 import { Game } from './db.js';
-import { flipTurn } from './utils.js';
+import { flipTurn, winning } from './utils.js';
 
 export default class SocketHandler {
   io: Server;
@@ -33,11 +33,17 @@ export default class SocketHandler {
         return;
       }
       case MessageType.PLACE_STONE: {
-        const { code, move } = message.payload;
+        const { code, move, board } = message.payload;
         const game = await Game.findOne({ code });
         if (!game) {
           console.error(`error: game ${code} not found`);
           return;
+        }
+
+        // check for winning
+        const winner = winning(board, move);
+        if (winner) {
+          game.status = GameStatus.COMPLETED;
         }
 
         // update game
@@ -52,7 +58,9 @@ export default class SocketHandler {
           players: game.players,
           status: game.status,
           turn: game.turn,
+          winner,
         });
+
         return;
       }
       case MessageType.TIME_OUT: {

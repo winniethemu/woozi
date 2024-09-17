@@ -75,6 +75,7 @@ export default function Game() {
     socket.emit(MessageType.PLACE_STONE, {
       code: game.code,
       move,
+      board: nextBoard,
     });
     // TODO: handle failure
   };
