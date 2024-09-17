@@ -69,7 +69,8 @@ export default class SocketHandler {
           (p: Player) => p.color !== player.color
         )[0];
         this.io.to(game.code).emit(MessageType.SYNC_GAME, {
-          ...game,
+          code: game.code,
+          players: game.players,
           status: GameStatus.COMPLETED,
           winner,
         });
