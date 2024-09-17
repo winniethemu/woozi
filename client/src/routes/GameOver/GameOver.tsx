@@ -1,4 +1,7 @@
+import { Flex } from '@radix-ui/themes';
 import { useLocation, useNavigate } from 'react-router-dom';
+
+import { SERVER_ROOT } from '../../consts';
 
 export default function GameOver() {
   const { state } = useLocation();
@@ -9,17 +12,25 @@ export default function GameOver() {
     navigate(`/games/${state.code}`);
   }
 
-  function handleExit() {
-    // TODO: clean up game on server
-    navigate(`/`);
+  async function handleExit() {
+    try {
+      await fetch(`${SERVER_ROOT}/api/games/${state.code}`, {
+        method: 'DELETE',
+      });
+      navigate('/');
+    } catch (err) {
+      // no op
+    }
   }
 
   return (
     <div>
       <h1>Game Over!</h1>
       <h2>{state.winner.color} has won.</h2>
-      <button onClick={handleRematch}>Rematch</button>
-      <button onClick={handleExit}>Exit</button>
+      <Flex gap="3">
+        <button onClick={handleRematch}>Rematch</button>
+        <button onClick={handleExit}>Exit</button>
+      </Flex>
     </div>
   );
 }

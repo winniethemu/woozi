@@ -9,7 +9,6 @@ import {
   missingOpponent,
   randomColor,
 } from './utils.js';
-import { io } from './index.js';
 
 const router = express.Router();
 
@@ -124,6 +123,20 @@ router.post(
       await game.save();
 
       res.status(200).json(game);
+    } catch (err) {
+      console.error(err);
+      res.sendStatus(500);
+    }
+  }
+);
+
+router.delete(
+  '/games/:code',
+  async (req: express.Request, res: express.Response) => {
+    const { code } = req.params;
+    try {
+      await Game.deleteOne({ code });
+      res.sendStatus(200);
     } catch (err) {
       console.error(err);
       res.sendStatus(500);
