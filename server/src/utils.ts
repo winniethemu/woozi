@@ -61,9 +61,6 @@ function stretch(board: GameBoard, move: Move, dLo: Vec2, dHi: Vec2): number {
   const { position, player } = move;
   let lo = position;
   let hi = position;
-  while (!outOfBound(vadd(lo, dLo)) && board[lo[0]][lo[1]] === player.color) {
-    lo = vadd(lo, dLo);
-  }
 
   while (true) {
     const [nr, nc] = vadd(lo, dLo);
@@ -83,7 +80,7 @@ function stretch(board: GameBoard, move: Move, dLo: Vec2, dHi: Vec2): number {
     }
   }
 
-  return Math.max(Math.abs(lo[0] - hi[0]), Math.abs(lo[1] - hi[1]));
+  return Math.max(Math.abs(lo[0] - hi[0]), Math.abs(lo[1] - hi[1])) + 1;
 }
 
 function vadd(u: Vec2, v: Vec2): Vec2 {
