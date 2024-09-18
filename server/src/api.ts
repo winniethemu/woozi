@@ -130,6 +130,28 @@ router.post(
   }
 );
 
+router.patch(
+  '/games/:code',
+  async (req: express.Request, res: express.Response) => {
+    const { code } = req.params;
+    try {
+      const game = await Game.findOne({ code });
+      if (!game) {
+        res.sendStatus(400);
+        return;
+      }
+      game.moves = [];
+      game.status = GameStatus.PLAYING;
+      game.turn = StoneType.BLACK;
+      await game.save();
+      res.status(200).json(game);
+    } catch (err) {
+      console.error(err);
+      res.sendStatus(500);
+    }
+  }
+);
+
 router.delete(
   '/games/:code',
   async (req: express.Request, res: express.Response) => {

@@ -72,6 +72,7 @@ export default class SocketHandler {
           code: game.code,
           players: game.players,
           status: GameStatus.COMPLETED,
+          turn: game.turn,
           winner,
         });
         return;

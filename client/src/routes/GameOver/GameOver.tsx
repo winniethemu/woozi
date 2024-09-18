@@ -4,12 +4,19 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { SERVER_ROOT } from '../../consts';
 
 export default function GameOver() {
-  const { state } = useLocation();
   const navigate = useNavigate();
+  const { state } = useLocation();
 
-  function handleRematch() {
-    // TODO: reset game on server
-    navigate(`/games/${state.code}`);
+  async function handleRematch() {
+    try {
+      const res = await fetch(`${SERVER_ROOT}/api/games/${state.code}`, {
+        method: 'PATCH',
+      });
+      const data = await res.json();
+      navigate(`/games/${data.code}`, { state: data });
+    } catch (err) {
+      // no op
+    }
   }
 
   async function handleExit() {
